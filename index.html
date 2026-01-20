@@ -427,10 +427,8 @@
     <header role="banner" aria-label="Encabezado">
       <div class="brandBar" aria-hidden="true"></div>
       <div class="brand">
-             <img class="logo" src="./ChatGPT Image 14 ene 2026, 04_12_24 p.m..png" alt="Logo" />
         <div class="titleBox">
-          <h1>Calculador de Rentabilidad -ZIPOLI-</h1>
-
+          <h1>Calculador de Rentabilidad QUIRGROUP ALEM 642</h1>
           <div class="controls" aria-label="Controles">
             <div class="pill" aria-label="Selector de mes">
               <label for="monthPick">Mes</label>
@@ -456,7 +454,7 @@
           <div id="kpiGastos" class="val">ARS 0</div>
         </div>
         <div class="kpi">
-          <div class="lbl">VAO (Mes)</div>
+          <div class="lbl">Rentabilidad VAO (Mes)</div>
           <div id="kpiVAO" class="val">ARS 0</div>
         </div>
         <div class="kpi">
@@ -767,13 +765,13 @@
     */
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBfS9eJOGtM77gfGgVFwF0VPRxyDuvazCQ",
-      authDomain: "rentabilidadzico.firebaseapp.com",
-      databaseURL: "https://rentabilidadzico-default-rtdb.firebaseio.com",
-      projectId: "rentabilidadzico",
-      storageBucket: "rentabilidadzico.firebasestorage.app",
-      messagingSenderId: "583951652445",
-      appId: "1:583951652445:web:d7391829137f83d1e15fb4"
+      apiKey: "AIzaSyAf13w0qiHrJnJ3KRO78Q4_Tl17Bn4UsPs",
+      authDomain: "rentabilidadquirgroup.firebaseapp.com",
+      databaseURL: "https://rentabilidadquirgroup-default-rtdb.firebaseio.com",
+      projectId: "rentabilidadquirgroup",
+      storageBucket: "rentabilidadquirgroup.firebasestorage.app",
+      messagingSenderId: "250975835166",
+      appId: "1:250975835166:web:16d10b1699ae48e614ca0f"
     };
 
     const APP = initializeApp(firebaseConfig);
@@ -781,7 +779,7 @@
     const DB = getDatabase(APP);
 
     // Cambiá si querés otro "espacio" (otra empresa / otra instancia)
-    const EMPRESA_ID = "zico_gnc";
+    const EMPRESA_ID = "quirgroup";
 
     const SERVICE_OPTIONS = ["CONVERSION","OBLEAS","VAO","PH","SERVICE","OTRO"];
     const GASTO_CATS = ["SUELDOS","GENERAL","SERVICIOS","IMPUESTOS","COMBUSTIBLE","OTRO"];
@@ -997,10 +995,10 @@
       const tOps = totalsOps(state.ops);
       const tG = totalGastos(state.gastos);
 
-      // VAO total del mes
+      // VAO (Mes): RENTABILIDAD total de VAO = SUMA(Venta - Costo) donde servicio == VAO
       const vaoTotal = state.ops
         .filter(r => r.servicio === "VAO")
-        .reduce((acc, r) => acc + toNumber(r.venta), 0);
+        .reduce((acc, r) => acc + (toNumber(r.venta) - toNumber(r.costo)), 0);
 
       const neta = tOps.rent - tG;
 

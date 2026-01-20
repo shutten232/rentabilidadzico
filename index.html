@@ -1,0 +1,1536 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculador de Rentabilidad · Quirgroup</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Paleta Quirgroup (extraída del logo) */
+      --qy:#FED933;          /* amarillo */
+      --qr:#CB2811;          /* rojo */
+      --qd:#331D17;          /* marrón/negro del texto */
+      --qk:#0b0f14;          /* negro frío */
+      --bg:#F6F7FB;          /* fondo app */
+      --card:rgba(255,255,255,.88);
+      --line:rgba(15,23,42,.10);
+      --muted:#5b677a;
+
+      --pos:#0f766e;
+      --neg:#b91c1c;
+
+      --shadow: 0 12px 32px rgba(15,23,42,.10);
+      --shadow2: 0 2px 10px rgba(15,23,42,.08);
+      --inset: inset 0 1px 0 rgba(255,255,255,.75);
+
+      --r:18px;
+      --r2:14px;
+      --h:46px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --focus: 0 0 0 3px rgba(203,40,17,.20);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:#0f172a;
+      background:
+        radial-gradient(1100px 600px at 12% 0%, rgba(254,217,51,.28), transparent 60%),
+        radial-gradient(900px 500px at 92% 8%, rgba(203,40,17,.14), transparent 55%),
+        var(--bg);
+    }
+
+    .wrap{ max-width:1240px; margin:0 auto; padding:18px 16px 26px; }
+
+    header{
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.80));
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:16px 16px 14px;
+      display:flex; gap:14px; align-items:flex-end; justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .brandBar{
+      width:100%;
+      height:10px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, var(--qy) 0%, var(--qy) 58%, var(--qr) 58%, var(--qr) 100%);
+      box-shadow: var(--shadow2);
+      border:1px solid rgba(15,23,42,.08);
+      margin-bottom: 10px;
+    }
+
+    .brand{
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+      min-width:280px;
+    }
+    .logo{
+      width:220px; height:auto;
+      border-radius:14px;
+      box-shadow: var(--shadow2);
+      border:1px solid rgba(15,23,42,.10);
+      overflow:hidden;
+      background: #fff;
+      display:block;
+    }
+
+    .logoSlot{
+      width:220px;
+      height:84px;
+      border-radius:14px;
+      box-shadow: var(--shadow2);
+      border:1px dashed rgba(15,23,42,.18);
+      background: linear-gradient(180deg, rgba(254,217,51,.20), rgba(255,255,255,.70));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color: rgba(11,15,20,.70);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      user-select:none;
+    }
+    .logoSlot small{
+      font-weight:800;
+      letter-spacing:.08em;
+      color: rgba(11,15,20,.55);
+      display:block;
+      margin-top:4px;
+      text-transform:none;
+    }
+
+    .titleBox{ display:flex; flex-direction:column; gap:6px; }
+    h1{ margin:0; font-size:24px; font-weight:900; letter-spacing:.2px; }
+    .sub{ margin:0; color:var(--muted); font-size:14px; line-height:1.35; max-width:92ch; }
+
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .pill{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.82));
+      box-shadow:var(--shadow2);
+      padding:10px 12px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .pill label{ font-size:10.8px; letter-spacing:.10em; text-transform:uppercase; color:var(--muted); font-weight:900; }
+    .pill input{
+      height:28px;
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.88);
+      padding:0 10px;
+      font-family:var(--mono);
+      font-weight:900;
+      outline:none;
+    }
+    .pill input:focus{ box-shadow:var(--focus); border-color: rgba(203,40,17,.45); }
+
+    .tabs{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .tab{
+      border:1px solid rgba(15,23,42,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.82));
+      box-shadow:var(--shadow2);
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:950;
+      color:var(--muted);
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .tab:active{ transform: translateY(1px); }
+    .tab.active{
+      color: var(--qd);
+      border-color: rgba(203,40,17,.40);
+      background: linear-gradient(180deg, rgba(254,217,51,.35), rgba(254,217,51,.14));
+    }
+
+    .kpis{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .kpi{ min-width:200px;
+      border:1px solid rgba(15,23,42,.10);
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
+      box-shadow:var(--shadow2);
+      padding:10px 14px;
+      display:flex; flex-direction:column; gap:3px;
+    }
+    .kpi .lbl{ font-size:12.6px; color:var(--muted); font-weight:900; }
+    .kpi .val{ font-family:var(--mono); font-size:16px; font-weight:950; }
+    .pos{ color:var(--pos); }
+    .neg{ color:var(--neg); }
+
+    main{ margin-top:14px; display:grid; gap:14px; }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:14px 16px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+    }
+    .h2{ margin:0; font-size:13px; font-weight:950; }
+    .hint{ margin-top:4px; font-size:12px; color:var(--muted); }
+
+    form{
+      padding:16px;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1.6fr 1fr 1fr auto;
+      gap:10px;
+      align-items:end;
+    }
+    @media (max-width: 1000px){ form{ grid-template-columns: 1fr 1fr 1fr 1fr; } .span2{ grid-column:span 2; } }
+    @media (max-width: 560px){ form{ grid-template-columns: 1fr 1fr; } .span2{ grid-column:span 2; } }
+
+    .field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .field label{ font-size:12.8px; color:var(--muted); font-weight:900; }
+    input,select{ height:46px;
+      border-radius:var(--r2);
+      border:1px solid rgba(15,23,42,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
+      box-shadow: var(--inset);
+      padding:0 12px;
+      outline:none;
+      min-width:0;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    input[type="number"]{ font-family:var(--mono); }
+    input:focus,select:focus{ border-color: rgba(203,40,17,.45); box-shadow: var(--focus), var(--inset); }
+
+    .btn{ height:46px;
+      padding:0 14px;
+      border-radius:var(--r2);
+      border:1px solid rgba(15,23,42,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.84));
+      box-shadow:var(--shadow2);
+      cursor:pointer;
+      font-weight:950;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn:focus{ outline:none; box-shadow: var(--focus), var(--shadow2); }
+    .btn.primary{
+      border-color: rgba(203,40,17,.30);
+      background: linear-gradient(180deg, rgba(254,217,51,.55), rgba(254,217,51,.22));
+      color: var(--qd);
+    }
+    .btn.danger{
+      border-color: rgba(185,28,28,.25);
+      background: linear-gradient(180deg, rgba(185,28,28,.10), rgba(185,28,28,.06));
+      color: var(--neg);
+    }
+    .btn.ghost{ background:transparent; box-shadow:none; }
+
+    .tableWrap{ overflow:auto; border-top:1px solid var(--line); }
+    table{ width:100%; border-collapse:separate; border-spacing:0; min-width:980px; }
+    thead th{ position:sticky; top:0; z-index:5; text-align:left; font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--muted);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.90));
+      border-bottom:1px solid var(--line);
+      padding:12px;
+      white-space:nowrap;
+    }
+    tbody td{
+      font-size:14px;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.74);
+      transition: background .12s ease;
+      vertical-align:middle;
+    }
+    tbody tr:hover td{ background: rgba(254,217,51,.10); }
+
+    td.num{ text-align:right; font-family:var(--mono); }
+    td.rent.pos{ color:var(--pos); font-weight:950; }
+    td.rent.neg{ color:var(--neg); font-weight:950; }
+
+    .cellInput,.cellSelect{ width:100%; height:44px;
+      border-radius:12px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.86);
+      padding:0 10px;
+      box-shadow: var(--inset);
+      outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+      font-size:14.5px;
+    }
+    .cellInput.num{ text-align:right; font-family:var(--mono); }
+    .cellInput:focus,.cellSelect:focus{ border-color: rgba(203,40,17,.45); box-shadow: var(--focus), var(--inset); }
+
+    tfoot td{
+      padding:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.86));
+      border-top:1px solid var(--line);
+      font-weight:950;
+    }
+    tfoot .label{ color:var(--muted); }
+    tfoot td.num{ font-family:var(--mono); }
+
+    .hide{ display:none !important; }
+
+    /* Resultado */
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+    @media (max-width: 980px){ .grid2{ grid-template-columns:1fr; } }
+    .stat{
+      border:1px solid rgba(15,23,42,.10);
+      border-radius:16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      box-shadow:var(--shadow2);
+      padding:14px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .stat .t{ color:var(--muted); font-size:12px; font-weight:900; }
+    .stat .v{ font-family:var(--mono); font-size:18px; font-weight:950; }
+    .stat .d{ color:var(--muted); font-size:12px; line-height:1.35; }
+
+    /* Gráfico: Gastos vs Neta */
+    .chart{
+      border-top:1px solid var(--line);
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .axisNote{
+      display:flex; justify-content:space-between; gap:10px;
+      color:var(--muted); font-size:12px; font-weight:900;
+    }
+    .hbar{
+      border:1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.74);
+      box-shadow:var(--shadow2);
+      border-radius:16px;
+      padding:12px;
+      display:grid;
+      grid-template-columns: 160px 1fr 140px;
+      gap:12px;
+      align-items:center;
+    }
+    @media (max-width: 740px){ .hbar{ grid-template-columns:1fr; } .rightVal{ text-align:left !important; } }
+    .hbar .name{ font-weight:950; font-size:12.5px; }
+    .track{
+      position:relative;
+      height:18px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(15,23,42,.06), rgba(15,23,42,.03));
+      border:1px solid rgba(15,23,42,.08);
+      overflow:hidden;
+    }
+    .track::after{
+      content:"";
+      position:absolute; left:50%; top:-6px;
+      width:2px; height:30px;
+      background: rgba(15,23,42,.14);
+    }
+    .barBlue,.barPos,.barNeg{
+      position:absolute; top:0; height:100%;
+      border-radius:999px;
+    }
+    .barBlue{
+      left:50%;
+      width:var(--wblue,0%);
+      background: linear-gradient(180deg, rgba(203,40,17,.30), rgba(254,217,51,.48));
+      border:1px solid rgba(203,40,17,.20);
+    }
+    .barPos{
+      left:50%;
+      width:var(--wpos,0%);
+      background: linear-gradient(180deg, rgba(15,118,110,.55), rgba(15,118,110,.32));
+      border:1px solid rgba(15,118,110,.28);
+    }
+    .barNeg{
+      right:50%;
+      width:var(--wneg,0%);
+      background: linear-gradient(180deg, rgba(185,28,28,.45), rgba(185,28,28,.26));
+      border:1px solid rgba(185,28,28,.26);
+    }
+    .rightVal{ text-align:right; font-family:var(--mono); font-weight:950; }
+
+    footer{
+      margin-top:14px;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.82));
+      box-shadow:var(--shadow);
+      padding:12px 16px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    .footNote{ color:var(--muted); font-size:12.5px; }
+
+    .sr-only{
+      position:absolute !important;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+
+    
+    /* Mobile table -> cards */
+    @media (max-width: 720px){
+      .tableWrap{ border-top:0; }
+      table{ min-width:0 !important; }
+      thead{ display:none; }
+      tbody, tr, td{ display:block; width:100%; }
+      tbody tr{
+        border:1px solid rgba(15,23,42,.10);
+        border-radius:16px;
+        margin:12px;
+        overflow:hidden;
+        box-shadow: var(--shadow2);
+      }
+      tbody td{
+      font-size:14px;
+        border-bottom:1px solid rgba(15,23,42,.08);
+        background: rgba(255,255,255,.86);
+        padding:10px 12px 12px;
+      }
+      tbody td:last-child{ border-bottom:0; }
+      tbody td::before{
+        content: attr(data-label);
+        display:block;
+        font-size:10.5px;
+        letter-spacing:.10em;
+        text-transform:uppercase;
+        color:var(--muted);
+        font-weight:950;
+        margin-bottom:6px;
+      }
+      td.num{ text-align:left; }
+      .cellInput,.cellSelect{ height:44px; font-size:14px; }
+      .btn{ height:44px; }
+      tfoot{ display:block; }
+      tfoot tr, tfoot td{ display:block; width:100%; }
+      tfoot td{ border-top:0; }
+    }
+
+    @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header role="banner" aria-label="Encabezado">
+      <div class="brandBar" aria-hidden="true"></div>
+      <div class="brand">
+             <img class="logo" src="./ChatGPT Image 14 ene 2026, 04_12_24 p.m..png" alt="Logo" />
+        <div class="titleBox">
+          <h1>Calculador de Rentabilidad -ZIPOLI-</h1>
+
+          <div class="controls" aria-label="Controles">
+            <div class="pill" aria-label="Selector de mes">
+              <label for="monthPick">Mes</label>
+              <input id="monthPick" type="month" aria-label="Seleccionar mes" />
+            </div>
+
+            <div class="tabs" role="tablist" aria-label="Pestañas">
+              <button class="tab active" id="tabOpsBtn" role="tab" aria-selected="true" aria-controls="panelOps">Operaciones</button>
+              <button class="tab" id="tabGastosBtn" role="tab" aria-selected="false" aria-controls="panelGastos">Gastos</button>
+              <button class="tab" id="tabResultadoBtn" role="tab" aria-selected="false" aria-controls="panelResultado">Resultado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis" aria-label="KPIs del mes">
+        <div class="kpi">
+          <div class="lbl">Facturación Bruta (Mes)</div>
+          <div id="kpiRentBruta" class="val pos">ARS 0</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Gastos (Mes)</div>
+          <div id="kpiGastos" class="val">ARS 0</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">VAO (Mes)</div>
+          <div id="kpiVAO" class="val">ARS 0</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Rentabilidad Neta (Mes)</div>
+          <div id="kpiNeta" class="val pos">ARS 0</div>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+      <!-- OPERACIONES -->
+      <section id="panelOps" role="tabpanel" aria-label="Panel operaciones">
+        <section class="card" aria-label="Formulario operaciones">
+          <div class="cardHead">
+            <div>
+              <div class="h2">Nueva operación</div>
+              <div class="hint">Se guarda por Fecha. La tabla muestra solo el mes seleccionado.</div>
+            </div>
+          </div>
+
+          <form id="addFormOps" autocomplete="off" novalidate aria-label="Formulario para agregar operación">
+            <div class="field">
+              <label for="inFecha">Fecha</label>
+              <input id="inFecha" type="date" aria-label="Fecha" required />
+            </div>
+
+            <div class="field">
+              <label for="inServicio">Servicio</label>
+              <select id="inServicio" aria-label="Servicio" required>
+                <option value="CONVERSION">CONVERSION</option>
+                <option value="OBLEAS">OBLEAS</option>
+                <option value="VAO">VAO</option>
+                <option value="PH">PH</option>
+                <option value="SERVICE">SERVICE</option>
+                <option value="OTRO">OTRO</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="inDominio">Dominio</label>
+              <input id="inDominio" type="text" placeholder="ABC123" aria-label="Dominio" />
+            </div>
+
+            <div class="field span2">
+              <label for="inDesc">Descripción</label>
+              <input id="inDesc" type="text" placeholder="Detalle del trabajo" aria-label="Descripción" />
+            </div>
+
+            <div class="field">
+              <label for="inVenta">Venta</label>
+              <input id="inVenta" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Venta" required />
+            </div>
+
+            <div class="field">
+              <label for="inCosto">Costo</label>
+              <input id="inCosto" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Costo" required />
+            </div>
+
+            <button class="btn primary" type="submit" aria-label="Agregar operación">Agregar</button>
+          </form>
+        </section>
+
+        <section class="card" aria-label="Tabla operaciones" style="margin-top:14px;">
+          <div class="cardHead">
+            <div>
+              <div class="h2">Operaciones del mes</div>
+              <div class="hint">Buscar por servicio, dominio o descripción.</div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <label class="sr-only" for="searchOps">Buscar</label>
+              <input id="searchOps" type="text" placeholder="Buscar" aria-label="Buscar en operaciones" style="height:var(--h);min-width:280px;" />
+              <label class="sr-only" for="dayOps">Filtrar por día</label>
+              <input id="dayOps" type="date" aria-label="Filtrar operaciones por día" style="height:46px;min-width:170px;" />
+              <button id="btnClearOps" class="btn ghost" type="button" aria-label="Limpiar búsqueda">Limpiar</button>
+              <button id="btnClearDayOps" class="btn ghost" type="button" aria-label="Limpiar filtro por día">Día</button>
+            </div>
+          </div>
+
+          <div class="tableWrap" role="region" aria-label="Tabla editable de operaciones" tabindex="0">
+            <table aria-label="Tabla de operaciones">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Servicio</th>
+                  <th>Dominio</th>
+                  <th>Descripción</th>
+                  <th style="text-align:right">Venta</th>
+                  <th style="text-align:right">Costo</th>
+                  <th style="text-align:right">Rentabilidad</th>
+                  <th style="text-align:right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyOps"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="label">Totales del mes</td>
+                  <td id="tVentaOps" class="num">ARS 0</td>
+                  <td id="tCostoOps" class="num">ARS 0</td>
+                  <td id="tRentOps" class="num">ARS 0</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- GASTOS -->
+      <section id="panelGastos" class="hide" role="tabpanel" aria-label="Panel gastos">
+        <section class="card" aria-label="Formulario gastos">
+          <div class="cardHead">
+            <div>
+              <div class="h2">Nuevo gasto</div>
+              <div class="hint">Se guarda por Fecha. La tabla muestra solo el mes seleccionado.</div>
+            </div>
+          </div>
+
+          <form id="addFormGastos" autocomplete="off" novalidate aria-label="Formulario para agregar gasto"
+                style="grid-template-columns: 1fr 1.2fr 2fr 1fr auto;">
+            <div class="field">
+              <label for="gFecha">Fecha</label>
+              <input id="gFecha" type="date" aria-label="Fecha de gasto" required />
+            </div>
+
+            <div class="field">
+              <label for="gCategoria">Categoría</label>
+              <select id="gCategoria" aria-label="Categoría de gasto" required>
+                <option value="SUELDOS">SUELDOS</option>
+                <option value="GENERAL">GENERAL</option>
+                <option value="SERVICIOS">SERVICIOS</option>
+                <option value="IMPUESTOS">IMPUESTOS</option>
+                <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                <option value="OTRO">OTRO</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="gDesc">Descripción</label>
+              <input id="gDesc" type="text" placeholder="Detalle del gasto" aria-label="Descripción del gasto" />
+            </div>
+
+            <div class="field">
+              <label for="gMonto">Monto</label>
+              <input id="gMonto" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Monto del gasto" required />
+            </div>
+
+            <button class="btn primary" type="submit" aria-label="Agregar gasto">Agregar</button>
+          </form>
+        </section>
+
+        <section class="card" aria-label="Tabla gastos" style="margin-top:14px;">
+          <div class="cardHead">
+            <div>
+              <div class="h2">Gastos del mes</div>
+              <div class="hint">Buscar por categoría o descripción.</div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <label class="sr-only" for="searchGastos">Buscar</label>
+              <input id="searchGastos" type="text" placeholder="Buscar" aria-label="Buscar en gastos" style="height:var(--h);min-width:280px;" />
+              <label class="sr-only" for="dayGastos">Filtrar por día</label>
+              <input id="dayGastos" type="date" aria-label="Filtrar gastos por día" style="height:46px;min-width:170px;" />
+              <button id="btnClearGastos" class="btn ghost" type="button" aria-label="Limpiar búsqueda">Limpiar</button>
+              <button id="btnClearDayGastos" class="btn ghost" type="button" aria-label="Limpiar filtro por día">Día</button>
+            </div>
+          </div>
+
+          <div class="tableWrap" role="region" aria-label="Tabla editable de gastos" tabindex="0">
+            <table aria-label="Tabla de gastos" style="min-width: 820px;">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Categoría</th>
+                  <th>Descripción</th>
+                  <th style="text-align:right">Monto</th>
+                  <th style="text-align:right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyGastos"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="label">Total gastos del mes</td>
+                  <td id="tGastos" class="num">ARS 0</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- RESULTADO -->
+      <section id="panelResultado" class="hide" role="tabpanel" aria-label="Panel resultado">
+        <section class="card" aria-label="Resultado del mes">
+          <div class="cardHead">
+            <div>
+              <div class="h2">Resultado del mes</div>
+              <div class="hint">Gráfico: Gastos vs Rentabilidad Neta (misma escala).</div>
+            </div>
+          </div>
+
+          <div class="grid2" aria-label="Tarjetas del mes">
+            <div class="stat" aria-label="Ventas del mes">
+              <div class="t">Ventas del mes</div>
+              <div id="resVentas" class="v">ARS 0</div>
+              <div class="d">Suma de Venta en operaciones del mes.</div>
+            </div>
+
+            <div class="stat" aria-label="Rentabilidad bruta del mes">
+              <div class="t">Rentabilidad bruta del mes</div>
+              <div id="resBruta" class="v pos">ARS 0</div>
+              <div class="d">Suma (Venta - Costo) del mes.</div>
+            </div>
+
+            <div class="stat" aria-label="Gastos del mes">
+              <div class="t">Gastos del mes</div>
+              <div id="resGastos" class="v">ARS 0</div>
+              <div class="d">Suma de gastos del mes.</div>
+            </div>
+
+            <div class="stat" aria-label="Rentabilidad neta del mes">
+              <div class="t">Rentabilidad neta del mes</div>
+              <div id="resNeta" class="v pos">ARS 0</div>
+              <div id="resMeta" class="d">Margen neto: 0.00%</div>
+            </div>
+          </div>
+
+          <div class="chart" aria-label="Gráfico Gastos vs Neta">
+            <div class="axisNote">
+              <div>← negativo</div>
+              <div id="chartScale" style="font-family:var(--mono);font-weight:950;">Escala: ARS 0</div>
+              <div>positivo →</div>
+            </div>
+
+            <div class="hbar" aria-label="Barra de gastos">
+              <div class="name">Gastos</div>
+              <div class="track" id="trackGastos" aria-label="Gastos sobre escala">
+                <div class="barBlue" id="barGastos" aria-hidden="true"></div>
+              </div>
+              <div class="rightVal" id="valGastos">ARS 0</div>
+            </div>
+
+            <div class="hbar" aria-label="Barra de rentabilidad neta">
+              <div class="name">Rentabilidad neta</div>
+              <div class="track" id="trackNeta" aria-label="Rentabilidad neta sobre escala">
+                <div class="barNeg" id="barNetaNeg" aria-hidden="true"></div>
+                <div class="barPos" id="barNetaPos" aria-hidden="true"></div>
+              </div>
+              <div class="rightVal pos" id="valNeta">ARS 0</div>
+            </div>
+          </div>
+
+          <div class="tableWrap" role="region" aria-label="Detalle numérico del mes" tabindex="0">
+            <table aria-label="Detalle del mes" style="min-width:760px;">
+              <thead><tr><th>Concepto</th><th style="text-align:right">Valor</th></tr></thead>
+              <tbody>
+                <tr><td>Total Venta</td><td class="num" id="resVentaRow">ARS 0</td></tr>
+                <tr><td>Total Costo</td><td class="num" id="resCostoRow">ARS 0</td></tr>
+                <tr><td>Total Rentabilidad Bruta</td><td class="num" id="resRentRow">ARS 0</td></tr>
+                <tr><td>Total Gastos</td><td class="num" id="resGastosRow">ARS 0</td></tr>
+              </tbody>
+              <tfoot><tr><td class="label">Resultado Neto</td><td class="num" id="resNetoRow">ARS 0</td></tr></tfoot>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer role="contentinfo" aria-label="Pie">
+      <div class="footNote" id="footHint">Exporta CSV del mes seleccionado (pestaña actual).</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="btnExport" class="btn primary" type="button" aria-label="Exportar CSV del mes">Exportar CSV (Mes)</button>
+        <button id="btnReset" class="btn danger" type="button" aria-label="Borrar datos del mes (pestaña)">Borrar Mes (Pestaña)</button>
+      </div>
+    </footer>
+  </div>
+
+  
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { getDatabase, ref, push, set, update, remove, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+  (() => {
+    "use strict";
+
+    /* =========================
+       Firebase Realtime Database
+       =========================
+       1) Pegá tu firebaseConfig real abajo (incluí databaseURL)
+       2) Habilitá Auth Anónimo en Firebase Auth
+       3) Realtime DB Rules (permanentes):
+          {
+            "rules": {
+              "rentabilidad": {
+                "$empresa": {
+                  "months": {
+                    "$month": {
+                      ".read": "auth != null",
+                      ".write": "auth != null"
+                    }
+                  }
+                }
+              }
+            }
+          }
+    */
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfS9eJOGtM77gfGgVFwF0VPRxyDuvazCQ",
+      authDomain: "rentabilidadzico.firebaseapp.com",
+      databaseURL: "https://rentabilidadzico-default-rtdb.firebaseio.com",
+      projectId: "rentabilidadzico",
+      storageBucket: "rentabilidadzico.firebasestorage.app",
+      messagingSenderId: "583951652445",
+      appId: "1:583951652445:web:d7391829137f83d1e15fb4"
+    };
+
+    const APP = initializeApp(firebaseConfig);
+    const AUTH = getAuth(APP);
+    const DB = getDatabase(APP);
+
+    // Cambiá si querés otro "espacio" (otra empresa / otra instancia)
+    const EMPRESA_ID = "zico_gnc";
+
+    const SERVICE_OPTIONS = ["CONVERSION","OBLEAS","VAO","PH","SERVICE","OTRO"];
+    const GASTO_CATS = ["SUELDOS","GENERAL","SERVICIOS","IMPUESTOS","COMBUSTIBLE","OTRO"];
+
+    const $ = (s) => document.querySelector(s);
+
+    const els = {
+      monthPick: $("#monthPick"),
+
+      tabOpsBtn: $("#tabOpsBtn"),
+      tabGastosBtn: $("#tabGastosBtn"),
+      tabResultadoBtn: $("#tabResultadoBtn"),
+      panelOps: $("#panelOps"),
+      panelGastos: $("#panelGastos"),
+      panelResultado: $("#panelResultado"),
+      footHint: $("#footHint"),
+
+      kpiRentBruta: $("#kpiRentBruta"),
+      kpiGastos: $("#kpiGastos"),
+      kpiVAO: $("#kpiVAO"),
+      kpiNeta: $("#kpiNeta"),
+
+      addFormOps: $("#addFormOps"),
+      inFecha: $("#inFecha"),
+      inServicio: $("#inServicio"),
+      inDominio: $("#inDominio"),
+      inDesc: $("#inDesc"),
+      inVenta: $("#inVenta"),
+      inCosto: $("#inCosto"),
+      searchOps: $("#searchOps"),
+      btnClearOps: $("#btnClearOps"),
+      dayOps: $("#dayOps"),
+      btnClearDayOps: $("#btnClearDayOps"),
+      tbodyOps: $("#tbodyOps"),
+      tVentaOps: $("#tVentaOps"),
+      tCostoOps: $("#tCostoOps"),
+      tRentOps: $("#tRentOps"),
+
+      addFormGastos: $("#addFormGastos"),
+      gFecha: $("#gFecha"),
+      gCategoria: $("#gCategoria"),
+      gDesc: $("#gDesc"),
+      gMonto: $("#gMonto"),
+      searchGastos: $("#searchGastos"),
+      btnClearGastos: $("#btnClearGastos"),
+      dayGastos: $("#dayGastos"),
+      btnClearDayGastos: $("#btnClearDayGastos"),
+      tbodyGastos: $("#tbodyGastos"),
+      tGastos: $("#tGastos"),
+
+      resVentas: $("#resVentas"),
+      resBruta: $("#resBruta"),
+      resGastos: $("#resGastos"),
+      resNeta: $("#resNeta"),
+      resMeta: $("#resMeta"),
+      resVentaRow: $("#resVentaRow"),
+      resCostoRow: $("#resCostoRow"),
+      resRentRow: $("#resRentRow"),
+      resGastosRow: $("#resGastosRow"),
+      resNetoRow: $("#resNetoRow"),
+
+      chartScale: $("#chartScale"),
+      trackGastos: $("#trackGastos"),
+      trackNeta: $("#trackNeta"),
+      barGastos: $("#barGastos"),
+      barNetaNeg: $("#barNetaNeg"),
+      barNetaPos: $("#barNetaPos"),
+      valGastos: $("#valGastos"),
+      valNeta: $("#valNeta"),
+
+      btnExport: $("#btnExport"),
+      btnReset: $("#btnReset"),
+    };
+
+    const fmtARS = (n) => {
+      const v = Number(n || 0);
+      try {
+        return new Intl.NumberFormat("es-AR", { style:"currency", currency:"ARS", maximumFractionDigits:0 }).format(v);
+      } catch {
+        return "ARS " + Math.round(v).toString();
+      }
+    };
+    const fmtPct = (x) => ((Number(x || 0) * 100).toFixed(2) + "%");
+
+    const clampText = (s) => (s ?? "").toString().trim();
+    const toNumber = (x) => {
+      const v = Number((x ?? "0").toString().replace(",", "."));
+      return Number.isFinite(v) ? v : 0;
+    };
+
+    const todayISO = () => {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+    const currentMonth = () => todayISO().slice(0,7);
+    const monthOf = (dateStr) => (clampText(dateStr).length >= 7 ? clampText(dateStr).slice(0,7) : "");
+
+    const escapeAttr = (s) =>
+      (s ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
+
+    const calcRent = (venta, costo) => toNumber(venta) - toNumber(costo);
+
+    // Estado de la app (datos vienen del RTDB para el mes activo)
+    let state = {
+      ops: [],
+      gastos: [],
+      activeTab: "ops",
+      month: currentMonth()
+    };
+
+    // -------- RTDB Paths --------
+    const monthBase = (m) => `rentabilidad/${EMPRESA_ID}/months/${m}`;
+    const opsBase = (m) => `${monthBase(m)}/ops`;
+    const gastosBase = (m) => `${monthBase(m)}/gastos`;
+
+    let listeners = { opsRef: null, gastosRef: null };
+    let authReady = false;
+
+    const initAnon = async () => {
+      await signInAnonymously(AUTH);
+      return new Promise((resolve) => {
+        onAuthStateChanged(AUTH, (u) => { if (u) resolve(u); });
+      });
+    };
+
+    const attachMonthListeners = (m) => {
+      // cortar listeners previos
+      if (listeners.opsRef) off(listeners.opsRef);
+      if (listeners.gastosRef) off(listeners.gastosRef);
+
+      const rOps = ref(DB, opsBase(m));
+      const rG = ref(DB, gastosBase(m));
+
+      listeners.opsRef = rOps;
+      listeners.gastosRef = rG;
+
+      onValue(rOps, (snap) => {
+        const v = snap.val() || {};
+        const rows = Object.entries(v).map(([id, data]) => ({
+          id,
+          fecha: data.fecha || "",
+          servicio: SERVICE_OPTIONS.includes(data.servicio) ? data.servicio : "OTRO",
+          dominio: data.dominio || "",
+          desc: data.desc || "",
+          venta: toNumber(data.venta),
+          costo: toNumber(data.costo),
+          updatedAt: toNumber(data.updatedAt)
+        }));
+        rows.sort((a,b) => (a.fecha||"").localeCompare(b.fecha||"") || (a.updatedAt||0)-(b.updatedAt||0));
+        state.ops = rows;
+        renderAll(false);
+      });
+
+      onValue(rG, (snap) => {
+        const v = snap.val() || {};
+        const rows = Object.entries(v).map(([id, data]) => ({
+          id,
+          fecha: data.fecha || "",
+          categoria: GASTO_CATS.includes(data.categoria) ? data.categoria : "OTRO",
+          desc: data.desc || "",
+          monto: toNumber(data.monto),
+          updatedAt: toNumber(data.updatedAt)
+        }));
+        rows.sort((a,b) => (a.fecha||"").localeCompare(b.fecha||"") || (a.updatedAt||0)-(b.updatedAt||0));
+        state.gastos = rows;
+        renderAll(false);
+      });
+    };
+
+    // -------- Cálculos --------
+    const totalsOps = (arr) => {
+      let venta=0, costo=0, rent=0;
+      for (const r of arr){
+        const v = toNumber(r.venta), c = toNumber(r.costo);
+        venta += v; costo += c; rent += (v - c);
+      }
+      return { venta, costo, rent };
+    };
+    const totalGastos = (arr) => arr.reduce((acc,g)=> acc + toNumber(g.monto), 0);
+
+    const getFilteredOps = () => {
+      const q = clampText(els.searchOps.value).toLowerCase();
+      const day = clampText(els.dayOps?.value);
+      let base = state.ops;
+      if (day) base = base.filter(r => r.fecha === day);
+      if (!q) return base;
+      return base.filter(r => (`${r.fecha} ${r.servicio} ${r.dominio} ${r.desc}`).toLowerCase().includes(q));
+    };
+    const getFilteredGastos = () => {
+      const q = clampText(els.searchGastos.value).toLowerCase();
+      const day = clampText(els.dayGastos?.value);
+      let base = state.gastos;
+      if (day) base = base.filter(g => g.fecha === day);
+      if (!q) return base;
+      return base.filter(g => (`${g.fecha} ${g.categoria} ${g.desc}`).toLowerCase().includes(q));
+    };
+
+    // Render throttling (evita repaints masivos)
+    let raf = 0;
+    const scheduleRender = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; renderAll(false); });
+    };
+
+    const updateKPIs = () => {
+      const tOps = totalsOps(state.ops);
+      const tG = totalGastos(state.gastos);
+
+      // VAO total del mes
+      const vaoTotal = state.ops
+        .filter(r => r.servicio === "VAO")
+        .reduce((acc, r) => acc + toNumber(r.venta), 0);
+
+      const neta = tOps.rent - tG;
+
+      els.kpiRentBruta.textContent = fmtARS(tOps.venta);
+      els.kpiGastos.textContent = fmtARS(tG);
+      if (els.kpiVAO) els.kpiVAO.textContent = fmtARS(vaoTotal);
+      els.kpiNeta.textContent = fmtARS(neta);
+
+      els.kpiRentBruta.classList.toggle("pos", tOps.venta >= 0);
+      els.kpiRentBruta.classList.toggle("neg", tOps.venta < 0);
+els.kpiNeta.classList.toggle("pos", neta >= 0);
+      els.kpiNeta.classList.toggle("neg", neta < 0);
+    };
+
+    const renderOps = () => {
+      const list = getFilteredOps();
+      let html = "";
+      for (const r of list){
+        const rent = calcRent(r.venta, r.costo);
+        const rentClass = rent >= 0 ? "pos" : "neg";
+        html += `
+          <tr data-id="${r.id}">
+            <td data-label="Fecha"><input class="cellInput" type="date" value="${escapeAttr(r.fecha)}" aria-label="Editar fecha" data-field="fecha"></td>
+            <td data-label="Servicio">
+              <select class="cellSelect" aria-label="Editar servicio" data-field="servicio">
+                ${SERVICE_OPTIONS.map(opt => `<option value="${opt}" ${opt===r.servicio?"selected":""}>${opt}</option>`).join("")}
+              </select>
+            </td>
+            <td data-label="Dominio"><input class="cellInput" type="text" value="${escapeAttr(r.dominio)}" aria-label="Editar dominio" data-field="dominio" placeholder="ABC123"></td>
+            <td data-label="Descripción"><input class="cellInput" type="text" value="${escapeAttr(r.desc)}" aria-label="Editar descripción" data-field="desc" placeholder="Detalle"></td>
+            <td data-label="Venta" class="num"><input class="cellInput num" type="number" min="0" step="1" value="${escapeAttr(r.venta)}" aria-label="Editar venta" data-field="venta"></td>
+            <td data-label="Venta" class="num"><input class="cellInput num" type="number" min="0" step="1" value="${escapeAttr(r.costo)}" aria-label="Editar costo" data-field="costo"></td>
+            <td data-label="Rentabilidad" class="num rent ${rentClass}" aria-label="Rentabilidad calculada">${fmtARS(rent)}</td>
+            <td data-label="Acción" class="num"><button class="btn danger" type="button" data-action="delete-op" aria-label="Eliminar operación">Eliminar</button></td>
+          </tr>
+        `;
+      }
+      els.tbodyOps.innerHTML = html;
+
+      const t = totalsOps(state.ops);
+      els.tVentaOps.textContent = fmtARS(t.venta);
+      els.tCostoOps.textContent = fmtARS(t.costo);
+      els.tRentOps.textContent = fmtARS(t.rent);
+    };
+
+    const renderGastos = () => {
+      const list = getFilteredGastos();
+      let html = "";
+      for (const g of list){
+        html += `
+          <tr data-id="${g.id}">
+            <td data-label="Fecha"><input class="cellInput" type="date" value="${escapeAttr(g.fecha)}" aria-label="Editar fecha gasto" data-field="fecha"></td>
+            <td data-label="Categoría">
+              <select class="cellSelect" aria-label="Editar categoría" data-field="categoria">
+                ${GASTO_CATS.map(c => `<option value="${c}" ${c===g.categoria?"selected":""}>${c}</option>`).join("")}
+              </select>
+            </td>
+            <td data-label="Descripción"><input class="cellInput" type="text" value="${escapeAttr(g.desc)}" aria-label="Editar descripción gasto" data-field="desc" placeholder="Detalle"></td>
+            <td data-label="Monto" class="num"><input class="cellInput num" type="number" min="0" step="1" value="${escapeAttr(g.monto)}" aria-label="Editar monto gasto" data-field="monto"></td>
+            <td data-label="Acción" class="num"><button class="btn danger" type="button" data-action="delete-g" aria-label="Eliminar gasto">Eliminar</button></td>
+          </tr>
+        `;
+      }
+      els.tbodyGastos.innerHTML = html;
+      els.tGastos.textContent = fmtARS(totalGastos(state.gastos));
+    };
+
+    const renderResultado = () => {
+      const tOps = totalsOps(state.ops);
+      const tG = totalGastos(state.gastos);
+      const neta = tOps.rent - tG;
+
+      const margenNeto = tOps.venta > 0 ? (neta / tOps.venta) : 0;
+
+      els.resVentas.textContent = fmtARS(tOps.venta);
+      els.resBruta.textContent = fmtARS(tOps.rent);
+      els.resGastos.textContent = fmtARS(tG);
+      els.resNeta.textContent = fmtARS(neta);
+      els.resMeta.textContent = `Margen neto: ${fmtPct(margenNeto)}`;
+
+      els.resBruta.classList.toggle("pos", tOps.rent >= 0);
+      els.resBruta.classList.toggle("neg", tOps.rent < 0);
+      els.resNeta.classList.toggle("pos", neta >= 0);
+      els.resNeta.classList.toggle("neg", neta < 0);
+
+      els.resVentaRow.textContent = fmtARS(tOps.venta);
+      els.resCostoRow.textContent = fmtARS(tOps.costo);
+      els.resRentRow.textContent = fmtARS(tOps.rent);
+      els.resGastosRow.textContent = fmtARS(tG);
+      els.resNetoRow.textContent = fmtARS(neta);
+      els.resNetoRow.classList.toggle("pos", neta >= 0);
+      els.resNetoRow.classList.toggle("neg", neta < 0);
+
+      const scale = Math.max(1, Math.max(Math.abs(neta), Math.abs(tG)));
+      els.chartScale.textContent = `Escala: ${fmtARS(scale)}`;
+
+      const wG = Math.min(100, (Math.abs(tG) / scale) * 100);
+      els.barGastos.style.setProperty("--wblue", wG.toFixed(2) + "%");
+      els.valGastos.textContent = fmtARS(tG);
+
+      const wN = Math.min(100, (Math.abs(neta) / scale) * 100);
+      const isNeg = neta < 0;
+      els.barNetaNeg.style.setProperty("--wneg", (isNeg ? wN : 0).toFixed(2) + "%");
+      els.barNetaPos.style.setProperty("--wpos", (!isNeg ? wN : 0).toFixed(2) + "%");
+
+      els.valNeta.textContent = fmtARS(neta);
+      els.valNeta.classList.toggle("pos", neta >= 0);
+      els.valNeta.classList.toggle("neg", neta < 0);
+
+      els.trackGastos.setAttribute("aria-label", `Gastos del mes: ${fmtARS(tG)} (escala ${fmtARS(scale)})`);
+      els.trackNeta.setAttribute("aria-label", `Rentabilidad neta del mes: ${fmtARS(neta)} (escala ${fmtARS(scale)})`);
+    };
+
+    // renderAll(persistUIOnly=true/false)
+    const renderAll = (persistUIOnly = true) => {
+      renderOps();
+      renderGastos();
+      updateKPIs();
+      renderResultado();
+    };
+
+    const setTab = (tab) => {
+      state.activeTab = tab;
+
+      const isOps = tab === "ops";
+      const isG = tab === "gastos";
+      const isR = tab === "resultado";
+
+      els.panelOps.classList.toggle("hide", !isOps);
+      els.panelGastos.classList.toggle("hide", !isG);
+      els.panelResultado.classList.toggle("hide", !isR);
+
+      els.tabOpsBtn.classList.toggle("active", isOps);
+      els.tabGastosBtn.classList.toggle("active", isG);
+      els.tabResultadoBtn.classList.toggle("active", isR);
+
+      els.tabOpsBtn.setAttribute("aria-selected", String(isOps));
+      els.tabGastosBtn.setAttribute("aria-selected", String(isG));
+      els.tabResultadoBtn.setAttribute("aria-selected", String(isR));
+
+      els.footHint.textContent = `Exporta CSV del mes ${state.month} (pestaña actual).`;
+    };
+
+    // -------- RTDB CRUD --------
+    const rtdbAddOp = async (m, op) => {
+      const idRef = push(ref(DB, opsBase(m)));
+      await set(idRef, { ...op, updatedAt: Date.now() });
+    };
+    const rtdbUpdateOp = async (m, id, patch) => {
+      await update(ref(DB, `${opsBase(m)}/${id}`), { ...patch, updatedAt: Date.now() });
+    };
+    const rtdbDeleteOp = async (m, id) => {
+      await remove(ref(DB, `${opsBase(m)}/${id}`));
+    };
+
+    const rtdbAddGasto = async (m, g) => {
+      const idRef = push(ref(DB, gastosBase(m)));
+      await set(idRef, { ...g, updatedAt: Date.now() });
+    };
+    const rtdbUpdateGasto = async (m, id, patch) => {
+      await update(ref(DB, `${gastosBase(m)}/${id}`), { ...patch, updatedAt: Date.now() });
+    };
+    const rtdbDeleteGasto = async (m, id) => {
+      await remove(ref(DB, `${gastosBase(m)}/${id}`));
+    };
+
+    // -------- Eventos UI --------
+    els.monthPick.addEventListener("change", () => {
+      if (els.dayOps) els.dayOps.value = "";
+      if (els.dayGastos) els.dayGastos.value = "";
+      state.month = clampText(els.monthPick.value) || currentMonth();
+      els.footHint.textContent = `Exporta CSV del mes ${state.month} (pestaña actual).`;
+
+      // fechas por defecto al 1 del mes seleccionado
+      els.inFecha.value = `${state.month}-01`;
+      els.gFecha.value = `${state.month}-01`;
+
+      if (authReady) attachMonthListeners(state.month);
+      // render inmediato (limpia tabla mientras llega snapshot)
+      state.ops = [];
+      state.gastos = [];
+      renderAll(false);
+    });
+
+    els.addFormOps.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fecha = clampText(els.inFecha.value);
+      const servicio = clampText(els.inServicio.value);
+      const dominio = clampText(els.inDominio.value).toUpperCase();
+      const desc = clampText(els.inDesc.value);
+      const venta = toNumber(els.inVenta.value);
+      const costo = toNumber(els.inCosto.value);
+
+      if (!fecha || !servicio || venta <= 0){
+        alert("Completa Fecha, Servicio y Venta > 0.");
+        return;
+      }
+
+      const m = monthOf(fecha) || state.month;
+
+      try{
+        await rtdbAddOp(m, { fecha, servicio, dominio, desc, venta, costo });
+      } catch(err){
+        console.error(err);
+        alert("Error guardando en Realtime DB. Revisá firebaseConfig y Rules.");
+        return;
+      }
+
+      // si se agregó en otro mes, saltar a ese mes
+      if (m !== state.month){
+        state.month = m;
+        els.monthPick.value = m;
+        els.inFecha.value = `${m}-01`;
+        els.gFecha.value = `${m}-01`;
+        if (authReady) attachMonthListeners(m);
+      }
+
+      els.inDominio.value = "";
+      els.inDesc.value = "";
+      els.inVenta.value = "";
+      els.inCosto.value = "";
+      els.inDominio.focus();
+    });
+
+    els.addFormGastos.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fecha = clampText(els.gFecha.value);
+      const categoria = clampText(els.gCategoria.value);
+      const desc = clampText(els.gDesc.value);
+      const monto = toNumber(els.gMonto.value);
+
+      if (!fecha || !categoria || monto <= 0){
+        alert("Completa Fecha, Categoría y Monto > 0.");
+        return;
+      }
+
+      const m = monthOf(fecha) || state.month;
+
+      try{
+        await rtdbAddGasto(m, { fecha, categoria, desc, monto });
+      } catch(err){
+        console.error(err);
+        alert("Error guardando en Realtime DB. Revisá firebaseConfig y Rules.");
+        return;
+      }
+
+      if (m !== state.month){
+        state.month = m;
+        els.monthPick.value = m;
+        els.inFecha.value = `${m}-01`;
+        els.gFecha.value = `${m}-01`;
+        if (authReady) attachMonthListeners(m);
+      }
+
+      els.gDesc.value = "";
+      els.gMonto.value = "";
+      els.gDesc.focus();
+    });
+
+    // Buscar
+    els.btnClearOps.addEventListener("click", () => { els.searchOps.value = ""; renderOps(); });
+    els.searchOps.addEventListener("input", () => renderOps());
+
+    // Filtro por día
+    els.dayOps.addEventListener("change", () => renderOps());
+    els.dayOps.addEventListener("input", () => renderOps());
+    els.btnClearDayOps.addEventListener("click", () => { els.dayOps.value = ""; renderOps(); });
+
+    els.btnClearGastos.addEventListener("click", () => { els.searchGastos.value = ""; renderGastos(); });
+    els.searchGastos.addEventListener("input", () => renderGastos());
+
+    els.dayGastos.addEventListener("change", () => renderGastos());
+    els.dayGastos.addEventListener("input", () => renderGastos());
+    els.btnClearDayGastos.addEventListener("click", () => { els.dayGastos.value = ""; renderGastos(); });
+
+    // Edit/Delete ops (delegation)
+    els.tbodyOps.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action='delete-op']");
+      if (!btn) return;
+      const tr = btn.closest("tr");
+      const id = tr?.dataset?.id;
+      if (!id) return;
+
+      try{
+        await rtdbDeleteOp(state.month, id);
+      } catch(err){
+        console.error(err);
+        alert("Error eliminando en Realtime DB.");
+      }
+    });
+
+    els.tbodyOps.addEventListener("input", (e) => {
+      handleOpsEditEvent(e);
+    });
+
+    els.tbodyOps.addEventListener("change", (e) => {
+      handleOpsEditEvent(e);
+    });
+
+    function handleOpsEditEvent(e){
+      const el = e.target;
+      const tr = el.closest("tr");
+      if (!tr) return;
+      const id = tr.dataset.id;
+      const field = el.dataset.field;
+      if (!id || !field) return;
+
+      // Si cambia la fecha y pasa a otro mes, este registro debería moverse.
+      // Regla simple: NO mover automáticamente. Si cambiás la fecha a otro mes, queda guardada
+      // pero el registro "desaparece" al no pertenecer al mes actual.
+      // (Si querés mover automático, lo implemento.)
+      let val;
+      if (field === "venta" || field === "costo") val = toNumber(el.value);
+      else if (field === "dominio") val = clampText(el.value).toUpperCase();
+      else val = clampText(el.value);
+
+      // Debounce por fila/campo (evita update por cada tecla)
+      scheduleUpdateOp(id, field, val);
+      scheduleRender();
+    }
+
+
+    // Edit/Delete gastos
+    els.tbodyGastos.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action='delete-g']");
+      if (!btn) return;
+      const tr = btn.closest("tr");
+      const id = tr?.dataset?.id;
+      if (!id) return;
+
+      try{
+        await rtdbDeleteGasto(state.month, id);
+      } catch(err){
+        console.error(err);
+        alert("Error eliminando en Realtime DB.");
+      }
+    });
+
+    els.tbodyGastos.addEventListener("input", (e) => {
+      handleGastosEditEvent(e);
+    });
+
+    els.tbodyGastos.addEventListener("change", (e) => {
+      handleGastosEditEvent(e);
+    });
+
+    function handleGastosEditEvent(e){
+      const el = e.target;
+      const tr = el.closest("tr");
+      if (!tr) return;
+      const id = tr.dataset.id;
+      const field = el.dataset.field;
+      if (!id || !field) return;
+
+      let val;
+      if (field === "monto") val = toNumber(el.value);
+      else val = clampText(el.value);
+
+      scheduleUpdateGasto(id, field, val);
+      scheduleRender();
+    }
+
+
+    // Tabs
+    els.tabOpsBtn.addEventListener("click", () => setTab("ops"));
+    els.tabGastosBtn.addEventListener("click", () => setTab("gastos"));
+    els.tabResultadoBtn.addEventListener("click", () => setTab("resultado"));
+
+    // Export/Reset (MES)
+    const csvCell = (v) => `"${(v ?? "").toString().replaceAll('"','""')}"`;
+    const download = (content, filename) => {
+      const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    };
+
+    const exportCSV = () => {
+      const m = state.month;
+
+      if (state.activeTab === "ops"){
+        const rows = state.ops;
+        const header = ["Fecha","Servicio","Dominio","Descripción","Venta","Costo","Rentabilidad"];
+        const lines = [header.join(",")];
+        for (const r of rows){
+          const rent = calcRent(r.venta, r.costo);
+          lines.push([
+            csvCell(r.fecha),
+            csvCell(r.servicio),
+            csvCell(r.dominio),
+            csvCell(r.desc),
+            String(Math.round(toNumber(r.venta))),
+            String(Math.round(toNumber(r.costo))),
+            String(Math.round(rent))
+          ].join(","));
+        }
+        download(lines.join("\n"), `operaciones_${m}.csv`);
+        return;
+      }
+
+      if (state.activeTab === "gastos"){
+        const rows = state.gastos;
+        const header = ["Fecha","Categoría","Descripción","Monto"];
+        const lines = [header.join(",")];
+        for (const g of rows){
+          lines.push([
+            csvCell(g.fecha),
+            csvCell(g.categoria),
+            csvCell(g.desc),
+            String(Math.round(toNumber(g.monto)))
+          ].join(","));
+        }
+        download(lines.join("\n"), `gastos_${m}.csv`);
+        return;
+      }
+
+      // Resultado
+      const tOps = totalsOps(state.ops);
+      const tG = totalGastos(state.gastos);
+      const neta = tOps.rent - tG;
+      const margenNeto = tOps.venta > 0 ? (neta / tOps.venta) : 0;
+
+      const header = ["Mes","Concepto","Valor"];
+      const lines = [header.join(",")];
+      lines.push([csvCell(m), csvCell("Total Venta"), String(Math.round(tOps.venta))].join(","));
+      lines.push([csvCell(m), csvCell("Total Costo"), String(Math.round(tOps.costo))].join(","));
+      lines.push([csvCell(m), csvCell("Rentabilidad Bruta"), String(Math.round(tOps.rent))].join(","));
+      lines.push([csvCell(m), csvCell("Total Gastos"), String(Math.round(tG))].join(","));
+      lines.push([csvCell(m), csvCell("Rentabilidad Neta"), String(Math.round(neta))].join(","));
+      lines.push([csvCell(m), csvCell("Margen Neto"), csvCell(fmtPct(margenNeto))].join(","));
+      download(lines.join("\n"), `resultado_${m}.csv`);
+    };
+
+    const resetMonthActiveTab = async () => {
+      const m = state.month;
+
+      if (state.activeTab === "ops"){
+        if (!confirm(`Borrar OPERACIONES del mes ${m}?`)) return;
+        try{
+          await remove(ref(DB, opsBase(m)));
+        } catch(err){
+          console.error(err);
+          alert("Error borrando en Realtime DB.");
+        }
+        return;
+      }
+
+      if (state.activeTab === "gastos"){
+        if (!confirm(`Borrar GASTOS del mes ${m}?`)) return;
+        try{
+          await remove(ref(DB, gastosBase(m)));
+        } catch(err){
+          console.error(err);
+          alert("Error borrando en Realtime DB.");
+        }
+        return;
+      }
+
+      alert("Resultado se calcula con Operaciones y Gastos. Borra desde esas pestañas.");
+    };
+
+    els.btnExport.addEventListener("click", exportCSV);
+    els.btnReset.addEventListener("click", resetMonthActiveTab);
+
+    // -------- Update debouncers (reduce writes) --------
+    const pendingOp = new Map(); // key -> {t, patch}
+    const pendingG = new Map();
+
+    const scheduleUpdateOp = (id, field, value) => {
+      const key = id;
+      const cur = pendingOp.get(key) || { t: 0, patch: {} };
+      cur.patch[field] = value;
+      clearTimeout(cur.t);
+      cur.t = setTimeout(async () => {
+        const patch = cur.patch;
+        pendingOp.delete(key);
+        try{
+          await rtdbUpdateOp(state.month, id, patch);
+        } catch(err){
+          console.error(err);
+          alert("Error actualizando operación en Realtime DB.");
+        }
+      }, 350);
+      pendingOp.set(key, cur);
+    };
+
+    const scheduleUpdateGasto = (id, field, value) => {
+      const key = id;
+      const cur = pendingG.get(key) || { t: 0, patch: {} };
+      cur.patch[field] = value;
+      clearTimeout(cur.t);
+      cur.t = setTimeout(async () => {
+        const patch = cur.patch;
+        pendingG.delete(key);
+        try{
+          await rtdbUpdateGasto(state.month, id, patch);
+        } catch(err){
+          console.error(err);
+          alert("Error actualizando gasto en Realtime DB.");
+        }
+      }, 350);
+      pendingG.set(key, cur);
+    };
+
+    // INIT
+
+    els.monthPick.value = state.month || currentMonth();
+    els.inFecha.value = `${els.monthPick.value}-01`;
+    els.gFecha.value = `${els.monthPick.value}-01`;
+
+    renderAll(true);
+    setTab(state.activeTab);
+
+    // Auth + listeners
+    (async () => {
+      try{
+        await initAnon();
+        authReady = true;
+        attachMonthListeners(state.month);
+      } catch(err){
+        console.error(err);
+        alert("No se pudo autenticar anónimo. Revisá Auth Anonymous y firebaseConfig.");
+      }
+    })();
+  })();
+  </script>
+</body>

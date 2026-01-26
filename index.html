@@ -420,21 +420,32 @@
 
     @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
   
-    /* Admin oculto */
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.55)}
-    #btnAdmin{display:none}
-    /* Modal admin */
-    .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
-    .modal{width:min(720px,100%);border-radius:22px;border:1px solid rgba(255,255,255,.16);background:rgba(18,18,22,.92);box-shadow:0 20px 60px rgba(0,0,0,.55);overflow:hidden}
-    .modalHd{padding:18px 18px 12px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .modalHd h3{margin:0;font-size:16px;letter-spacing:.2px}
-    .modalBd{padding:16px 18px 18px;display:grid;gap:12px}
-    .modalBd .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .modalBd input{flex:1;min-width:220px}
-    .dangerBox{padding:12px 14px;border-radius:16px;border:1px solid rgba(255,80,80,.25);background:rgba(255,60,60,.07)}
-    .dangerBox .ttl{font-weight:800;letter-spacing:.2px;margin-bottom:6px}
-    .tiny{font-size:12px;opacity:.75}
-</style>
+    .hide{ display:none !important; }
+
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(11,15,20,.55);
+      display:flex; align-items:center; justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modalCard{
+      width:min(720px, 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.90));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .modalBody{ padding:14px; }
+    code{ font-family:var(--mono); font-weight:900; }
+    
+  </style>
 </head>
 
 <body>
@@ -442,8 +453,10 @@
     <header role="banner" aria-label="Encabezado">
       <div class="brandBar" aria-hidden="true"></div>
       <div class="brand">
+             <img class="logo" src="./ChatGPT Image 14 ene 2026, 04_12_24 p.m..png" alt="Logo" />
         <div class="titleBox">
-          <h1>Calculador de Rentabilidad QUIRGROUP ALEM 642</h1>
+          <h1>Calculador de Rentabilidad -ZIPOLI-</h1>
+
           <div class="controls" aria-label="Controles">
             <div class="pill" aria-label="Selector de mes">
               <label for="monthPick">Mes</label>
@@ -454,7 +467,7 @@
               <button class="tab active" id="tabOpsBtn" role="tab" aria-selected="true" aria-controls="panelOps">Operaciones</button>
               <button class="tab" id="tabGastosBtn" role="tab" aria-selected="false" aria-controls="panelGastos">Gastos</button>
               <button class="tab" id="tabResultadoBtn" role="tab" aria-selected="false" aria-controls="panelResultado">Resultado</button>
-              <button class="tab" id="tabConteoBtn" role="tab" aria-selected="false" aria-controls="panelConteo">Conteo</button>
+                          <button class="tab" id="tabConteoBtn" role="tab" aria-selected="false" aria-controls="panelConteo">Conteo</button>
             </div>
           </div>
         </div>
@@ -741,101 +754,88 @@
 
       <!-- CONTEO -->
       <section id="panelConteo" class="hide" role="tabpanel" aria-label="Panel conteo">
-        <section class="card" aria-label="Conteo de operaciones del mes">
+        <section class="card" aria-label="Conteo de operaciones">
           <div class="cardHead">
             <div>
               <div class="h2">Cantidad de operaciones (mes)</div>
-              <div class="hint">Cuenta cuántas operaciones tenés cargadas por tipo (solo del mes seleccionado).</div>
+              <div class="hint">Cuenta por tipo: CONVERSION, OBLEAS, VAO, PH, SERVICE, OTRO. Se basa en las operaciones del mes seleccionado.</div>
             </div>
           </div>
 
-          <div class="grid2" aria-label="KPIs de conteo">
-            <div class="stat" aria-label="Total de operaciones del mes">
-              <div class="t">Total operaciones</div>
-              <div id="cntTotalOps" class="v">0</div>
-              <div class="d">Cantidad total de filas en Operaciones (mes).</div>
+          <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch;">
+            <div class="pill" style="border-radius:var(--r2);width:100%;">
+              <label>Total de operaciones</label>
+              <div id="conteoTotal" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
             </div>
-
-            <div class="stat" aria-label="Servicios con más carga">
-              <div class="t">Top del mes</div>
-              <div id="cntTop" class="v">—</div>
-              <div id="cntTopHint" class="d">—</div>
+            <div class="pill" style="border-radius:var(--r2);width:100%;">
+              <label>Top del mes</label>
+              <div id="conteoTop" style="font-family:var(--mono);font-weight:950;font-size:16px;">-</div>
             </div>
           </div>
 
           <div class="tableWrap" role="region" aria-label="Tabla de conteo por servicio" tabindex="0">
-            <table aria-label="Conteo por servicio" style="min-width:540px;">
-              <thead>
-                <tr>
-                  <th>Servicio</th>
-                  <th style="text-align:right">Cantidad</th>
-                </tr>
-              </thead>
+            <table aria-label="Conteo por servicio" style="min-width:560px;">
+              <thead><tr><th>Servicio</th><th style="text-align:right">Cantidad</th></tr></thead>
               <tbody id="tbodyConteo"></tbody>
-              <tfoot>
-                <tr>
-                  <td class="label">Total</td>
-                  <td id="tConteo" class="num">0</td>
-                </tr>
-              </tfoot>
+              <tfoot><tr><td class="label">Total</td><td class="num" id="conteoTotalRow">0</td></tr></tfoot>
             </table>
           </div>
         </section>
       </section>
 
-
     </main>
 
+    
     <footer role="contentinfo" aria-label="Pie">
       <div class="footNote" id="footHint">Exporta CSV del mes seleccionado (pestaña actual).</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button id="btnExport" class="btn primary" type="button" aria-label="Exportar CSV del mes">Exportar CSV (Mes)</button>
-        <button id="btnBackup" class="btn" type="button" aria-label="Descargar respaldo JSON de todo">Respaldo JSON (Todo)</button>
-        <button id="btnImport" class="btn" type="button" aria-label="Importar respaldo JSON">Importar JSON</button>
-        <input id="fileImport" type="file" accept="application/json" style="display:none" />
-        <button id="btnAdmin" class="btn ghost" type="button" aria-label="Administración (oculto)">Admin</button>
-</div>
+        <button id="btnBackupAll" class="btn" type="button" aria-label="Respaldo JSON de toda la base">Respaldo JSON (Todo)</button>
+        <button id="btnImportAll" class="btn" type="button" aria-label="Importar JSON de respaldo">Importar JSON</button>
+        <input id="fileImportAll" type="file" accept="application/json,.json" style="display:none" />
+        <button id="btnReset" class="btn danger" type="button" aria-label="Borrar datos del mes (pestaña)" style="display:none">Borrar Mes (Pestaña)</button>
+      </div>
     </footer>
+
   </div>
 
-  
-  
-  <!-- Modal Admin (oculto) -->
-  <div id="adminBack" class="modalBack" role="dialog" aria-modal="true" aria-label="Administración">
-    <div class="modal">
-      <div class="modalHd">
-        <h3>Administración</h3>
-        <button id="adminClose" class="btn" type="button" aria-label="Cerrar">Cerrar</button>
+
+  <!-- ADMIN (oculto) -->
+  <div id="adminModal" class="modal hide" role="dialog" aria-modal="true" aria-label="Admin">
+    <div class="modalCard" role="document">
+      <div class="modalHead">
+        <div>
+          <div style="font-weight:950;">Admin</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px;">Acceso oculto. Requiere clave estrella para borrar o restaurar.</div>
+        </div>
+        <button id="adminClose" class="btn" type="button" aria-label="Cerrar admin">Cerrar</button>
       </div>
-      <div class="modalBd">
-        <div class="row">
-          <div class="pill" style="width:100%">
-            <label for="adminMonth">Mes objetivo</label>
-            <input id="adminMonth" type="month" />
-          </div>
+
+      <div class="modalBody">
+        <div class="field" style="max-width:360px;">
+          <label for="adminKey">Clave estrella</label>
+          <input id="adminKey" type="password" inputmode="text" placeholder="********" aria-label="Clave estrella" />
         </div>
 
-        <div class="dangerBox">
-          <div class="ttl">Acciones peligrosas</div>
-          <div class="tiny">Requiere CLAVE ESTRELLA: escribí exactamente ********</div>
-          <div class="row" style="margin-top:10px">
-            <input id="starKey" type="password" placeholder="********" aria-label="Clave estrella" />
-            <button id="adminDeleteMonth" class="btn danger" type="button">Borrar Mes (Ops + Gastos)</button>
-          </div>
-          <div class="row">
-            <input id="importKey" type="text" placeholder='Escribí IMPORTAR para confirmar' aria-label="Confirmación importar" />
-            <button id="adminRestoreAll" class="btn danger" type="button">Restaurar Backup (Sobrescribe Todo)</button>
-          </div>
-          <div class="tiny">Borrar Mes elimina datos del mes seleccionado. Restaurar Backup pisa toda la base de esta empresa.</div>
+        <div class="pill" style="border-radius:var(--r2);margin-top:10px;">
+          <label>Import pendiente</label>
+          <div id="importStatus" style="font-family:var(--mono);font-weight:900;font-size:12.8px;color:var(--muted);">Ninguno</div>
         </div>
 
-        <div class="row">
-          <div id="adminStatus" class="tiny"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button id="adminDeleteMonth" class="btn danger" type="button">Borrar Mes (Ops + Gastos)</button>
+          <button id="adminRestore" class="btn primary" type="button">Restaurar Backup (Sobrescribe TODO)</button>
+        </div>
+
+        <div style="margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35;">
+          Borrar mes elimina <b>ops</b> y <b>gastos</b> del mes seleccionado. Restaurar pisa todo <code>rentabilidad/${EMPRESA_ID}</code>.
         </div>
       </div>
     </div>
   </div>
-<script type="module">
+
+
+  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import { getDatabase, ref, push, set, update, remove, onValue, off, get } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
@@ -866,13 +866,13 @@
     */
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAf13w0qiHrJnJ3KRO78Q4_Tl17Bn4UsPs",
-      authDomain: "rentabilidadquirgroup.firebaseapp.com",
-      databaseURL: "https://rentabilidadquirgroup-default-rtdb.firebaseio.com",
-      projectId: "rentabilidadquirgroup",
-      storageBucket: "rentabilidadquirgroup.firebasestorage.app",
-      messagingSenderId: "250975835166",
-      appId: "1:250975835166:web:16d10b1699ae48e614ca0f"
+      apiKey: "AIzaSyBfS9eJOGtM77gfGgVFwF0VPRxyDuvazCQ",
+      authDomain: "rentabilidadzico.firebaseapp.com",
+      databaseURL: "https://rentabilidadzico-default-rtdb.firebaseio.com",
+      projectId: "rentabilidadzico",
+      storageBucket: "rentabilidadzico.firebasestorage.app",
+      messagingSenderId: "583951652445",
+      appId: "1:583951652445:web:d7391829137f83d1e15fb4"
     };
 
     const APP = initializeApp(firebaseConfig);
@@ -880,7 +880,7 @@
     const DB = getDatabase(APP);
 
     // Cambiá si querés otro "espacio" (otra empresa / otra instancia)
-    const EMPRESA_ID = "quirgroup";
+    const EMPRESA_ID = "zico_gnc";
 
     const SERVICE_OPTIONS = ["CONVERSION","OBLEAS","VAO","PH","SERVICE","OTRO"];
     const GASTO_CATS = ["SUELDOS","GENERAL","SERVICIOS","IMPUESTOS","COMBUSTIBLE","OTRO"];
@@ -944,6 +944,11 @@
       resGastosRow: $("#resGastosRow"),
       resNetoRow: $("#resNetoRow"),
 
+      conteoTotal: $("#conteoTotal"),
+      conteoTop: $("#conteoTop"),
+      tbodyConteo: $("#tbodyConteo"),
+      conteoTotalRow: $("#conteoTotalRow"),
+
       chartScale: $("#chartScale"),
       trackGastos: $("#trackGastos"),
       trackNeta: $("#trackNeta"),
@@ -953,16 +958,18 @@
       valGastos: $("#valGastos"),
       valNeta: $("#valNeta"),
 
-      cntTotalOps: $("#cntTotalOps"),
-      cntTop: $("#cntTop"),
-      cntTopHint: $("#cntTopHint"),
-      tbodyConteo: $("#tbodyConteo"),
-      tConteo: $("#tConteo"),
       btnExport: $("#btnExport"),
-      btnBackup: $("#btnBackup"),
-      btnImport: $("#btnImport"),
-      fileImport: $("#fileImport"),
-      btnAdmin: $("#btnAdmin"),
+      btnBackupAll: $("#btnBackupAll"),
+      btnImportAll: $("#btnImportAll"),
+      fileImportAll: $("#fileImportAll"),
+      btnReset: $("#btnReset"),
+
+      adminModal: $("#adminModal"),
+      adminClose: $("#adminClose"),
+      adminKey: $("#adminKey"),
+      adminDeleteMonth: $("#adminDeleteMonth"),
+      adminRestore: $("#adminRestore"),
+      importStatus: $("#importStatus"),
     };
 
     const fmtARS = (n) => {
@@ -1106,7 +1113,7 @@
       const tOps = totalsOps(state.ops);
       const tG = totalGastos(state.gastos);
 
-      // VAO (Mes): RENTABILIDAD total de VAO = SUMA(Venta - Costo) donde servicio == VAO
+      // Rentabilidad VAO (Mes): SUMA(Venta - Costo) donde servicio == "VAO"
       const vaoTotal = state.ops
         .filter(r => r.servicio === "VAO")
         .reduce((acc, r) => acc + (toNumber(r.venta) - toNumber(r.costo)), 0);
@@ -1223,41 +1230,31 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       els.trackNeta.setAttribute("aria-label", `Rentabilidad neta del mes: ${fmtARS(neta)} (escala ${fmtARS(scale)})`);
     };
 
-    // Conteo de operaciones por servicio (mes actual)
+
     const renderConteo = () => {
-      if (!els.tbodyConteo || !els.cntTotalOps) return;
-
-      const counts = Object.fromEntries(SERVICE_OPTIONS.map(s => [s, 0]));
-      for (const r of state.ops) counts[r.servicio] = (counts[r.servicio] || 0) + 1;
-
-      const total = state.ops.length;
-      els.cntTotalOps.textContent = String(total);
-      if (els.tConteo) els.tConteo.textContent = String(total);
-
-      // Top (mayor cantidad)
-      const ordered = SERVICE_OPTIONS
-        .map(s => ({ s, n: counts[s] || 0 }))
-        .sort((a,b) => b.n - a.n || a.s.localeCompare(b.s));
-      const top = ordered[0];
-      if (els.cntTop) els.cntTop.textContent = top && top.n > 0 ? `${top.s}` : "—";
-      if (els.cntTopHint){
-        if (!top || top.n <= 0) els.cntTopHint.textContent = "Sin operaciones cargadas en este mes.";
-        else {
-          const pct = total > 0 ? ((top.n / total) * 100) : 0;
-          els.cntTopHint.textContent = `${top.n} operaciones · ${pct.toFixed(1)}% del total`;
-        }
+      const counts = Object.fromEntries(SERVICE_OPTIONS.map(k => [k, 0]));
+      for (const r of state.ops){
+        const k = SERVICE_OPTIONS.includes(r.servicio) ? r.servicio : "OTRO";
+        counts[k] = (counts[k] || 0) + 1;
       }
 
-      const rows = SERVICE_OPTIONS
-        .map(s => ({ s, n: counts[s] || 0 }))
-        .sort((a,b) => b.n - a.n || a.s.localeCompare(b.s));
+      const total = Object.values(counts).reduce((a,b)=>a+b,0);
+      let top = "-";
+      if (total > 0){
+        const sorted = Object.entries(counts).sort((a,b)=> b[1]-a[1]);
+        const [k,v] = sorted[0];
+        top = `${k} (${v})`;
+      }
 
-      els.tbodyConteo.innerHTML = rows.map(r => `
-        <tr>
-          <td data-label="Servicio"><strong>${escapeAttr(r.s)}</strong></td>
-          <td data-label="Cantidad" class="num">${r.n}</td>
-        </tr>
-      `).join("");
+      if (els.conteoTotal) els.conteoTotal.textContent = String(total);
+      if (els.conteoTop) els.conteoTop.textContent = top;
+      if (els.conteoTotalRow) els.conteoTotalRow.textContent = String(total);
+
+      if (els.tbodyConteo){
+        els.tbodyConteo.innerHTML = SERVICE_OPTIONS
+          .map(k => `<tr><td>${k}</td><td class="num">${counts[k] || 0}</td></tr>`)
+          .join("");
+      }
     };
 
     // renderAll(persistUIOnly=true/false)
@@ -1269,6 +1266,7 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       renderConteo();
     };
 
+    
     const setTab = (tab) => {
       state.activeTab = tab;
 
@@ -1292,8 +1290,12 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       els.tabResultadoBtn.setAttribute("aria-selected", String(isR));
       els.tabConteoBtn.setAttribute("aria-selected", String(isC));
 
-      els.footHint.textContent = `Exporta CSV del mes ${state.month} (pestaña actual).`;
+      if (tab === "ops") els.footHint.textContent = `Exporta CSV de OPERACIONES del mes ${state.month}.`;
+      else if (tab === "gastos") els.footHint.textContent = `Exporta CSV de GASTOS del mes ${state.month}.`;
+      else if (tab === "conteo") els.footHint.textContent = `Exporta CSV del CONTEO del mes ${state.month}.`;
+      else els.footHint.textContent = `Exporta CSV del RESULTADO del mes ${state.month}.`;
     };
+
 
     // -------- RTDB CRUD --------
     const rtdbAddOp = async (m, op) => {
@@ -1576,16 +1578,16 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       }
 
       if (state.activeTab === "conteo"){
-        const counts = Object.fromEntries(SERVICE_OPTIONS.map(s => [s, 0]));
-        for (const r of state.ops) counts[r.servicio] = (counts[r.servicio] || 0) + 1;
-        const total = state.ops.length;
-
+        const counts = Object.fromEntries(SERVICE_OPTIONS.map(k => [k, 0]));
+        for (const r of state.ops){
+          const k = SERVICE_OPTIONS.includes(r.servicio) ? r.servicio : "OTRO";
+          counts[k] = (counts[k] || 0) + 1;
+        }
         const header = ["Mes","Servicio","Cantidad"];
         const lines = [header.join(",")];
-        for (const s of SERVICE_OPTIONS){
-          lines.push([csvCell(m), csvCell(s), String(counts[s] || 0)].join(","));
+        for (const k of SERVICE_OPTIONS){
+          lines.push([csvCell(m), csvCell(k), String(counts[k] || 0)].join(","));
         }
-        lines.push([csvCell(m), csvCell("TOTAL"), String(total)].join(","));
         download(lines.join("\n"), `conteo_operaciones_${m}.csv`);
         return;
       }
@@ -1632,213 +1634,168 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
         return;
       }
 
-      alert("Conteo/Resultado se calculan con Operaciones y Gastos. Borra desde esas pestañas.");
+      alert("Resultado se calcula con Operaciones y Gastos. Borra desde esas pestañas.");
     };
 
-    
-    // -------- Backup / Import --------
-    const BACKUP_ROOT = `rentabilidad/${EMPRESA_ID}`;
+    // -------- Backup/Import (TODO) --------
+    const STAR_KEY = "********";
+    let pendingImport = null;
 
-    const downloadText = (filename, text, mime="application/json") => {
-      const blob = new Blob([text], { type: mime });
+    const jsonDownload = (obj, filename) => {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
-    };
-
-    const countBackup = (rootObj) => {
-      const months = rootObj?.months || {};
-      const monthKeys = Object.keys(months);
-      let ops = 0, gastos = 0;
-      for (const mk of monthKeys){
-        const mm = months[mk] || {};
-        ops += Object.keys(mm.ops || {}).length;
-        gastos += Object.keys(mm.gastos || {}).length;
-      }
-      return { monthCount: monthKeys.length, ops, gastos };
+      URL.revokeObjectURL(a.href);
     };
 
     const backupAll = async () => {
       try{
-        els.footHint.textContent = "Generando respaldo JSON (todo)...";
-        const snap = await get(ref(DB, BACKUP_ROOT));
-        const data = snap.exists() ? snap.val() : {};
+        const snap = await get(ref(DB, `rentabilidad/${EMPRESA_ID}`));
+        const data = snap.val() || {};
         const payload = {
-          schema: "rentabilidad_backup_v1",
-          empresaId: EMPRESA_ID,
-          exportedAt: new Date().toISOString(),
+          meta: { empresaId: EMPRESA_ID, exportedAt: new Date().toISOString() },
           data
         };
-        const stamp = new Date();
-        const pad = (n)=>String(n).padStart(2,"0");
-        const name = `backup_${EMPRESA_ID}_${stamp.getFullYear()}-${pad(stamp.getMonth()+1)}-${pad(stamp.getDate())}_${pad(stamp.getHours())}${pad(stamp.getMinutes())}.json`;
-        downloadText(name, JSON.stringify(payload, null, 2));
-        const c = countBackup(data);
-        els.footHint.textContent = `Respaldo listo: ${c.monthCount} meses · ${c.ops} ops · ${c.gastos} gastos.`;
+        jsonDownload(payload, `backup_${EMPRESA_ID}_${new Date().toISOString().slice(0,10)}.json`);
       } catch(err){
         console.error(err);
-        alert("Error generando respaldo. Revisá conexión/permisos.");
-        els.footHint.textContent = "Error en respaldo.";
+        alert("No se pudo generar el backup. Revisá Rules y conexión.");
       }
     };
 
-    let pendingImportPayload = null;
-
-    const importPickFile = () => {
-      els.fileImport.value = "";
-      els.fileImport.click();
+    const openImportPicker = () => {
+      els.fileImportAll.value = "";
+      els.fileImportAll.click();
     };
 
-    const readJSONFile = (file) => new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload = () => {
-        try{ resolve(JSON.parse(String(r.result||""))); }
-        catch(e){ reject(e); }
-      };
-      r.onerror = reject;
-      r.readAsText(file);
-    });
-
-    const handleImportFile = async (file) => {
+    const onPickedImportFile = async (file) => {
       try{
-        const obj = await readJSONFile(file);
-        // Acepta payload con {data} o directamente el root
-        const payload = (obj && obj.data) ? obj : { schema: "unknown", empresaId: EMPRESA_ID, importedAt: new Date().toISOString(), data: obj };
-        pendingImportPayload = payload;
+        const text = await file.text();
+        const parsed = JSON.parse(text);
 
-        const c = countBackup(payload.data || {});
-        els.footHint.textContent = `Import listo (pendiente): ${c.monthCount} meses · ${c.ops} ops · ${c.gastos} gastos. Abrí Admin para restaurar.`;
-        // Abrir admin automáticamente para que quede claro que falta clave
+        // formato esperado: { meta, data } o directamente el nodo
+        const node = (parsed && typeof parsed === "object" && "data" in parsed) ? parsed.data : parsed;
+
+        if (!node || typeof node !== "object"){
+          alert("Backup inválido (no es objeto).");
+          return;
+        }
+
+        pendingImport = node;
+        if (els.importStatus){
+          const months = pendingImport?.months ? Object.keys(pendingImport.months).length : 0;
+          els.importStatus.textContent = `Listo: months=${months}`;
+        }
+        // abrir admin automáticamente (para ejecutar restore con clave)
         openAdmin();
       } catch(err){
         console.error(err);
-        alert("El archivo no es JSON válido.");
+        alert("No se pudo leer el JSON. Está corrupto o no es válido.");
       }
     };
 
-    // -------- Admin modal (oculto) --------
-    const admin = {
-      back: document.getElementById("adminBack"),
-      close: document.getElementById("adminClose"),
-      month: document.getElementById("adminMonth"),
-      starKey: document.getElementById("starKey"),
-      importKey: document.getElementById("importKey"),
-      delMonth: document.getElementById("adminDeleteMonth"),
-      restore: document.getElementById("adminRestoreAll"),
-      status: document.getElementById("adminStatus"),
-    };
-
-    const STAR = "********";
+    // -------- Admin (oculto) --------
+    let clicks = 0;
+    let clickTimer = 0;
 
     const openAdmin = () => {
-      admin.month.value = state.month || currentMonth();
-      admin.starKey.value = "";
-      admin.importKey.value = "";
-      admin.status.textContent = "";
-      admin.back.style.display = "flex";
+      els.adminModal.classList.remove("hide");
+      els.adminKey.value = "";
+      els.adminKey.focus();
+      if (!pendingImport) els.importStatus.textContent = "Ninguno";
     };
 
     const closeAdmin = () => {
-      admin.back.style.display = "none";
+      els.adminModal.classList.add("hide");
     };
 
-    admin.close.addEventListener("click", closeAdmin);
-    admin.back.addEventListener("click", (e)=>{ if(e.target === admin.back) closeAdmin(); });
+    const checkKey = () => clampText(els.adminKey.value) === STAR_KEY;
 
-    // Trigger oculto: 7 clicks en el título en 2.5s
-    let tap = { n:0, t:0 };
+    const adminDeleteMonth = async () => {
+      if (!checkKey()){
+        alert("Clave estrella incorrecta.");
+        return;
+      }
+      const m = state.month;
+      if (!confirm(`CONFIRMAR: borrar OPS + GASTOS del mes ${m}?`)) return;
+
+      try{
+        await remove(ref(DB, monthBase(m)));
+      } catch(err){
+        console.error(err);
+        alert("Error borrando mes en Realtime DB.");
+      }
+    };
+
+    const adminRestore = async () => {
+      if (!checkKey()){
+        alert("Clave estrella incorrecta.");
+        return;
+      }
+      if (!pendingImport){
+        alert("No hay import pendiente. Usá 'Importar JSON' primero.");
+        return;
+      }
+      const ok = prompt('Escribí IMPORTAR para confirmar (sobrescribe TODO):') === "IMPORTAR";
+      if (!ok) return;
+
+      try{
+        await set(ref(DB, `rentabilidad/${EMPRESA_ID}`), pendingImport);
+        pendingImport = null;
+        els.importStatus.textContent = "Ninguno";
+        alert("Backup restaurado.");
+      } catch(err){
+        console.error(err);
+        alert("No se pudo restaurar. Revisá Rules y conexión.");
+      }
+    };
+
+    // accesos ocultos
     const titleEl = document.querySelector("h1");
     if (titleEl){
-      titleEl.style.cursor = "default";
-      titleEl.addEventListener("click", ()=>{
-        const now = Date.now();
-        if (now - tap.t > 2500){ tap = { n:0, t: now }; }
-        tap.n += 1; tap.t = now;
-        if (tap.n >= 7){
-          tap = { n:0, t:0 };
+      titleEl.style.userSelect = "none";
+      titleEl.addEventListener("click", () => {
+        clicks++;
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(()=>{ clicks = 0; }, 2500);
+        if (clicks >= 7){
+          clicks = 0;
           openAdmin();
         }
       });
     }
 
-    // Trigger teclado: Ctrl + Shift + K
-    window.addEventListener("keydown", (e)=>{
+    document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.shiftKey && (e.key === "K" || e.key === "k")){
         e.preventDefault();
         openAdmin();
       }
-    });
-
-    // Botón admin existe pero está oculto
-    if (els.btnAdmin) els.btnAdmin.addEventListener("click", openAdmin);
-
-    // Borrar mes completo (ops + gastos) con clave estrella
-    admin.delMonth.addEventListener("click", async ()=>{
-      const m = admin.month.value || state.month;
-      if (!m) return;
-      if (admin.starKey.value !== STAR){
-        admin.status.textContent = "Clave estrella incorrecta.";
-        return;
-      }
-      if (!confirm(`BORRAR TODO el mes ${m} (OPERACIONES + GASTOS)?`)) return;
-
-      try{
-        admin.status.textContent = "Borrando mes...";
-        await remove(ref(DB, opsBase(m)));
-        await remove(ref(DB, gastosBase(m)));
-        admin.status.textContent = `Mes ${m} borrado.`;
-        // recarga estado en pantalla
-        if (m === state.month) attachMonthListeners(m);
-      } catch(err){
-        console.error(err);
-        admin.status.textContent = "Error borrando mes (ver consola).";
-        alert("Error borrando mes. Revisá permisos/conexión.");
+      if (e.key === "Escape" && !els.adminModal.classList.contains("hide")){
+        closeAdmin();
       }
     });
 
-    // Restaurar backup: pisa TODO (rentabilidad/EMPRESA_ID)
-    admin.restore.addEventListener("click", async ()=>{
-      if (admin.starKey.value !== STAR){
-        admin.status.textContent = "Clave estrella incorrecta.";
-        return;
-      }
-      if (admin.importKey.value !== "IMPORTAR"){
-        admin.status.textContent = 'Para restaurar escribí IMPORTAR.';
-        return;
-      }
-      if (!pendingImportPayload || !pendingImportPayload.data){
-        admin.status.textContent = "No hay archivo cargado para restaurar.";
-        return;
-      }
-      if (!confirm("Esto SOBRESCRIBE TODA la información. Continuar?")) return;
+    els.adminClose.addEventListener("click", closeAdmin);
+    els.adminModal.addEventListener("click", (e) => {
+      if (e.target === els.adminModal) closeAdmin();
+    });
+    els.adminDeleteMonth.addEventListener("click", adminDeleteMonth);
+    els.adminRestore.addEventListener("click", adminRestore);
 
-      try{
-        admin.status.textContent = "Restaurando backup...";
-        await set(ref(DB, BACKUP_ROOT), pendingImportPayload.data);
-        admin.status.textContent = "Backup restaurado.";
-        // refrescar mes actual
-        attachMonthListeners(state.month);
-        els.footHint.textContent = "Backup restaurado.";
-      } catch(err){
-        console.error(err);
-        admin.status.textContent = "Error restaurando (ver consola).";
-        alert("Error restaurando backup. Revisá permisos/conexión.");
-      }
+    els.btnBackupAll.addEventListener("click", backupAll);
+    els.btnImportAll.addEventListener("click", openImportPicker);
+    els.fileImportAll.addEventListener("change", (e) => {
+      const f = e.target.files?.[0];
+      if (f) onPickedImportFile(f);
     });
 
-    // -------- Eventos UI --------
     els.btnExport.addEventListener("click", exportCSV);
-    els.btnBackup.addEventListener("click", backupAll);
-    els.btnImport.addEventListener("click", importPickFile);
-    els.fileImport.addEventListener("change", (e)=>{
-      const f = e.target.files && e.target.files[0];
-      if (f) handleImportFile(f);
-    });
-// -------- Update debouncers (reduce writes) --------
+
+    // -------- Update debouncers (reduce writes) --------
     const pendingOp = new Map(); // key -> {t, patch}
     const pendingG = new Map();
 
@@ -1885,6 +1842,7 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
     els.gFecha.value = `${els.monthPick.value}-01`;
 
     renderAll(true);
+    setTab(state.activeTab || "ops");
     setTab(state.activeTab);
 
     // Auth + listeners

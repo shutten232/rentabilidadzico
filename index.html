@@ -779,12 +779,7 @@
     <label>Tubos PH</label>
     <div id="conteoTubosPH" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
   </div>
-  <div class="pill" style="border-radius:var(--r2);width:100%;">
-    <label>Top del mes</label>
-    <div id="conteoTop" style="font-family:var(--mono);font-weight:950;font-size:16px;">-</div>
-  </div>
-
-  <div class="pill" style="border-radius:var(--r2);width:100%;">
+<div class="pill" style="border-radius:var(--r2);width:100%;">
     <label>OBLEAS</label>
     <div id="conteoOBLEAS" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
   </div>
@@ -992,9 +987,7 @@
       conteoPH: $("#conteoPH"),
       conteoCONVERSION: $("#conteoCONVERSION"),
       conteoVAO: $("#conteoVAO"),
-      conteoOTRO: $("#conteoOTRO"),
-      conteoTop: $("#conteoTop"),
-      tbodyConteo: $("#tbodyConteo"),
+      conteoOTRO: $("#conteoOTRO"),      tbodyConteo: $("#tbodyConteo"),
       conteoTotalRow: $("#conteoTotalRow"),
 
       chartScale: $("#chartScale"),
@@ -1295,7 +1288,6 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       els.trackNeta.setAttribute("aria-label", `Rentabilidad neta del mes: ${fmtARS(neta)} (escala ${fmtARS(scale)})`);
     };
 
-
     const renderConteo = () => {
       const counts = Object.fromEntries(SERVICE_OPTIONS.map(k => [k, 0]));
       for (const r of state.ops){
@@ -1310,25 +1302,20 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
         .filter(r => r.servicio === "PH")
         .reduce((acc, r) => acc + clampTubos(r.tubos || 1), 0);
 
-      // Top del mes
-      let top = "—";
-      if (total > 0){
-        const sorted = Object.entries(counts).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
-        const [k,v] = sorted[0];
-        top = `${k} (${v})`;
-      }
+      // KPI OBLEAS: OBLEAS + 1 por cada PH + 1 por cada CONVERSION
+      const obleasKPI = (counts["OBLEAS"] || 0) + (counts["PH"] || 0) + (counts["CONVERSION"] || 0);
 
+      // KPIs del panel CONTEO
       if (els.conteoTotal) els.conteoTotal.textContent = String(total);
       if (els.conteoTubosPH) els.conteoTubosPH.textContent = String(tubosPH);
-
-      if (els.conteoOBLEAS) els.conteoOBLEAS.textContent = String(counts["OBLEAS"] || 0);
+      if (els.conteoOBLEAS) els.conteoOBLEAS.textContent = String(obleasKPI);
       if (els.conteoSERVICE) els.conteoSERVICE.textContent = String(counts["SERVICE"] || 0);
       if (els.conteoPH) els.conteoPH.textContent = String(counts["PH"] || 0);
       if (els.conteoCONVERSION) els.conteoCONVERSION.textContent = String(counts["CONVERSION"] || 0);
       if (els.conteoVAO) els.conteoVAO.textContent = String(counts["VAO"] || 0);
       if (els.conteoOTRO) els.conteoOTRO.textContent = String(counts["OTRO"] || 0);
 
-      if (els.conteoTop) els.conteoTop.textContent = top;
+      // Totales en tabla (si existe)
       if (els.conteoTotalRow) els.conteoTotalRow.textContent = String(total);
 
       // Tabla (si existe). Queda oculta por CSS/inline, pero no rompe.
@@ -1338,6 +1325,7 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
           .join("");
       }
     };
+
 
     // renderAll(persistUIOnly=true/false)
     const renderAll = (persistUIOnly = true) => {

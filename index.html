@@ -474,7 +474,7 @@
       </div>
 
       <div class="kpis" aria-label="KPIs del mes">
-        <div class="kpi">
+        <div class="kpi" style="display:none">
           <div class="lbl">Facturación Bruta (Mes)</div>
           <div id="kpiRentBruta" class="val pos">ARS 0</div>
         </div>
@@ -521,6 +521,12 @@
                 <option value="OTRO">OTRO</option>
               </select>
             </div>
+
+            <div class="field" id="fieldTubosPH" style="display:none">
+              <label for="inTubos">Tubos (PH)</label>
+              <input id="inTubos" type="number" min="1" max="5" step="1" value="1" inputmode="numeric" aria-label="Cantidad de tubos PH (1 a 5)" />
+            </div>
+
 
             <div class="field">
               <label for="inDominio">Dominio</label>
@@ -569,6 +575,7 @@
                 <tr>
                   <th>Fecha</th>
                   <th>Servicio</th>
+                  <th style="text-align:right">Tubos</th>
                   <th>Dominio</th>
                   <th>Descripción</th>
                   <th style="text-align:right">Venta</th>
@@ -580,7 +587,7 @@
               <tbody id="tbodyOps"></tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" class="label">Totales del mes</td>
+                  <td colspan="5" class="label">Totales del mes</td>
                   <td id="tVentaOps" class="num">ARS 0</td>
                   <td id="tCostoOps" class="num">ARS 0</td>
                   <td id="tRentOps" class="num">ARS 0</td>
@@ -762,18 +769,50 @@
             </div>
           </div>
 
-          <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch;">
-            <div class="pill" style="border-radius:var(--r2);width:100%;">
-              <label>Total de operaciones</label>
-              <div id="conteoTotal" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
-            </div>
-            <div class="pill" style="border-radius:var(--r2);width:100%;">
-              <label>Top del mes</label>
-              <div id="conteoTop" style="font-family:var(--mono);font-weight:950;font-size:16px;">-</div>
-            </div>
-          </div>
+          
+<div style="padding:16px;display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:10px;align-items:stretch;">
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>Total operaciones</label>
+    <div id="conteoTotal" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>Tubos PH</label>
+    <div id="conteoTubosPH" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>Top del mes</label>
+    <div id="conteoTop" style="font-family:var(--mono);font-weight:950;font-size:16px;">-</div>
+  </div>
 
-          <div class="tableWrap" role="region" aria-label="Tabla de conteo por servicio" tabindex="0">
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>OBLEAS</label>
+    <div id="conteoOBLEAS" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>SERVICE</label>
+    <div id="conteoSERVICE" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;;display:none">
+    <label>PH</label>
+    <div id="conteoPH" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>CONVERSION</label>
+    <div id="conteoCONVERSION" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>VAO</label>
+    <div id="conteoVAO" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+  <div class="pill" style="border-radius:var(--r2);width:100%;">
+    <label>OTRO</label>
+    <div id="conteoOTRO" style="font-family:var(--mono);font-weight:950;font-size:22px;">0</div>
+  </div>
+</div>
+
+<div class="tableWrap" style="display:none" role="region" aria-label="Tabla de conteo por servicio" tabindex="0">
+ role="region" aria-label="Tabla de conteo por servicio" tabindex="0">
             <table aria-label="Conteo por servicio" style="min-width:560px;">
               <thead><tr><th>Servicio</th><th style="text-align:right">Cantidad</th></tr></thead>
               <tbody id="tbodyConteo"></tbody>
@@ -908,6 +947,8 @@
       addFormOps: $("#addFormOps"),
       inFecha: $("#inFecha"),
       inServicio: $("#inServicio"),
+      fieldTubosPH: $("#fieldTubosPH"),
+      inTubos: $("#inTubos"),
       inDominio: $("#inDominio"),
       inDesc: $("#inDesc"),
       inVenta: $("#inVenta"),
@@ -945,6 +986,13 @@
       resNetoRow: $("#resNetoRow"),
 
       conteoTotal: $("#conteoTotal"),
+      conteoTubosPH: $("#conteoTubosPH"),
+      conteoOBLEAS: $("#conteoOBLEAS"),
+      conteoSERVICE: $("#conteoSERVICE"),
+      conteoPH: $("#conteoPH"),
+      conteoCONVERSION: $("#conteoCONVERSION"),
+      conteoVAO: $("#conteoVAO"),
+      conteoOTRO: $("#conteoOTRO"),
       conteoTop: $("#conteoTop"),
       tbodyConteo: $("#tbodyConteo"),
       conteoTotalRow: $("#conteoTotalRow"),
@@ -986,6 +1034,12 @@
     const toNumber = (x) => {
       const v = Number((x ?? "0").toString().replace(",", "."));
       return Number.isFinite(v) ? v : 0;
+    };
+
+    const clampTubos = (n) => {
+      const v = Math.round(Number(n || 1));
+      if (!Number.isFinite(v)) return 1;
+      return Math.min(5, Math.max(1, v));
     };
 
     const todayISO = () => {
@@ -1043,16 +1097,22 @@
 
       onValue(rOps, (snap) => {
         const v = snap.val() || {};
-        const rows = Object.entries(v).map(([id, data]) => ({
-          id,
-          fecha: data.fecha || "",
-          servicio: SERVICE_OPTIONS.includes(data.servicio) ? data.servicio : "OTRO",
-          dominio: data.dominio || "",
-          desc: data.desc || "",
-          venta: toNumber(data.venta),
-          costo: toNumber(data.costo),
-          updatedAt: toNumber(data.updatedAt)
-        }));
+        const rows = Object.entries(v).map(([id, data]) => {
+          const servicioRaw = clampText(data.servicio).toUpperCase();
+          const servicio = SERVICE_OPTIONS.includes(servicioRaw) ? servicioRaw : "OTRO";
+          const tubos = (servicio === "PH") ? clampTubos(data.tubos || 1) : 1;
+          return {
+            id,
+            fecha: data.fecha || "",
+            servicio,
+            dominio: data.dominio || "",
+            desc: data.desc || "",
+            venta: toNumber(data.venta),
+            costo: toNumber(data.costo),
+            tubos,
+            updatedAt: toNumber(data.updatedAt)
+          };
+        });
         rows.sort((a,b) => (a.fecha||"").localeCompare(b.fecha||"") || (a.updatedAt||0)-(b.updatedAt||0));
         state.ops = rows;
         renderAll(false);
@@ -1145,6 +1205,11 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
                 ${SERVICE_OPTIONS.map(opt => `<option value="${opt}" ${opt===r.servicio?"selected":""}>${opt}</option>`).join("")}
               </select>
             </td>
+            <td data-label="Tubos" class="num">
+              <input class="cellInput num" type="number" min="1" max="5" step="1"
+                value="${escapeAttr(r.tubos || 1)}" aria-label="Editar tubos PH" data-field="tubos" ${r.servicio==="PH"?"":"disabled"}>
+            </td>
+
             <td data-label="Dominio"><input class="cellInput" type="text" value="${escapeAttr(r.dominio)}" aria-label="Editar dominio" data-field="dominio" placeholder="ABC123"></td>
             <td data-label="Descripción"><input class="cellInput" type="text" value="${escapeAttr(r.desc)}" aria-label="Editar descripción" data-field="desc" placeholder="Detalle"></td>
             <td data-label="Venta" class="num"><input class="cellInput num" type="number" min="0" step="1" value="${escapeAttr(r.venta)}" aria-label="Editar venta" data-field="venta"></td>
@@ -1235,21 +1300,38 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       const counts = Object.fromEntries(SERVICE_OPTIONS.map(k => [k, 0]));
       for (const r of state.ops){
         const k = SERVICE_OPTIONS.includes(r.servicio) ? r.servicio : "OTRO";
-        counts[k] = (counts[k] || 0) + 1;
+        counts[k] = (counts[k] || 0) + 1; // conteo por OPERACIÓN
       }
 
-      const total = Object.values(counts).reduce((a,b)=>a+b,0);
-      let top = "-";
+      const total = state.ops.length;
+
+      // Tubos PH (KPI aparte)
+      const tubosPH = state.ops
+        .filter(r => r.servicio === "PH")
+        .reduce((acc, r) => acc + clampTubos(r.tubos || 1), 0);
+
+      // Top del mes
+      let top = "—";
       if (total > 0){
-        const sorted = Object.entries(counts).sort((a,b)=> b[1]-a[1]);
+        const sorted = Object.entries(counts).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
         const [k,v] = sorted[0];
         top = `${k} (${v})`;
       }
 
       if (els.conteoTotal) els.conteoTotal.textContent = String(total);
+      if (els.conteoTubosPH) els.conteoTubosPH.textContent = String(tubosPH);
+
+      if (els.conteoOBLEAS) els.conteoOBLEAS.textContent = String(counts["OBLEAS"] || 0);
+      if (els.conteoSERVICE) els.conteoSERVICE.textContent = String(counts["SERVICE"] || 0);
+      if (els.conteoPH) els.conteoPH.textContent = String(counts["PH"] || 0);
+      if (els.conteoCONVERSION) els.conteoCONVERSION.textContent = String(counts["CONVERSION"] || 0);
+      if (els.conteoVAO) els.conteoVAO.textContent = String(counts["VAO"] || 0);
+      if (els.conteoOTRO) els.conteoOTRO.textContent = String(counts["OTRO"] || 0);
+
       if (els.conteoTop) els.conteoTop.textContent = top;
       if (els.conteoTotalRow) els.conteoTotalRow.textContent = String(total);
 
+      // Tabla (si existe). Queda oculta por CSS/inline, pero no rompe.
       if (els.tbodyConteo){
         els.tbodyConteo.innerHTML = SERVICE_OPTIONS
           .map(k => `<tr><td>${k}</td><td class="num">${counts[k] || 0}</td></tr>`)
@@ -1338,7 +1420,20 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       renderAll(false);
     });
 
-    els.addFormOps.addEventListener("submit", async (e) => {
+    
+    // Mostrar Tubos solo si Servicio = PH (alta)
+    const syncTubosField = () => {
+      const isPH = (clampText(els.inServicio.value) === "PH");
+      if (els.fieldTubosPH) els.fieldTubosPH.style.display = isPH ? "" : "none";
+      if (!isPH && els.inTubos) els.inTubos.value = "1";
+      if (isPH && els.inTubos && !els.inTubos.value) els.inTubos.value = "1";
+    };
+    if (els.inServicio) {
+      els.inServicio.addEventListener("change", syncTubosField);
+      syncTubosField();
+    }
+
+els.addFormOps.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const fecha = clampText(els.inFecha.value);
@@ -1356,7 +1451,8 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       const m = monthOf(fecha) || state.month;
 
       try{
-        await rtdbAddOp(m, { fecha, servicio, dominio, desc, venta, costo });
+        const tubos = (servicio === "PH") ? clampTubos(els.inTubos?.value || 1) : 1;
+        await rtdbAddOp(m, { fecha, servicio, dominio, desc, venta, costo, tubos });
       } catch(err){
         console.error(err);
         alert("Error guardando en Realtime DB. Revisá firebaseConfig y Rules.");
@@ -1376,6 +1472,8 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       els.inDesc.value = "";
       els.inVenta.value = "";
       els.inCosto.value = "";
+      if (els.inTubos) els.inTubos.value = "1";
+      if (els.fieldTubosPH) els.fieldTubosPH.style.display = "none";
       els.inDominio.focus();
     });
 
@@ -1469,8 +1567,30 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
       // (Si querés mover automático, lo implemento.)
       let val;
       if (field === "venta" || field === "costo") val = toNumber(el.value);
+      else if (field === "tubos") val = clampTubos(el.value);
       else if (field === "dominio") val = clampText(el.value).toUpperCase();
       else val = clampText(el.value);
+
+      // Si cambia el servicio, sincronizar tubos en UI y datos
+      if (field === "servicio"){
+        const newServ = val;
+        const tubosInput = tr.querySelector('input[data-field="tubos"]');
+        if (newServ === "PH"){
+          if (tubosInput){
+            tubosInput.disabled = false;
+            if (!tubosInput.value) tubosInput.value = "1";
+          }
+        } else {
+          // fuera de PH: tubos fijo 1
+          if (tubosInput){
+            tubosInput.value = "1";
+            tubosInput.disabled = true;
+          }
+          // persistir tubos=1 para mantener consistencia
+          scheduleUpdateOp(id, "tubos", 1);
+        }
+      }
+
 
       // Debounce por fila/campo (evita update por cada tecla)
       scheduleUpdateOp(id, field, val);
@@ -1543,13 +1663,14 @@ els.kpiNeta.classList.toggle("pos", neta >= 0);
 
       if (state.activeTab === "ops"){
         const rows = state.ops;
-        const header = ["Fecha","Servicio","Dominio","Descripción","Venta","Costo","Rentabilidad"];
+        const header = ["Fecha","Servicio","Tubos","Dominio","Descripción","Venta","Costo","Rentabilidad"];
         const lines = [header.join(",")];
         for (const r of rows){
           const rent = calcRent(r.venta, r.costo);
           lines.push([
             csvCell(r.fecha),
             csvCell(r.servicio),
+            String(clampTubos(r.tubos || 1)),
             csvCell(r.dominio),
             csvCell(r.desc),
             String(Math.round(toNumber(r.venta))),
